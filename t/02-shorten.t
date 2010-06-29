@@ -14,14 +14,14 @@ my $args = {
 };
 
 #success shorten
-ok my $bitly = WebService::Bitly->new($args);
+ok my $bitly = WebService::Bitly->new(%$args);
 ok my $result_shorten = $bitly->shorten('http://example.com/');
 ok !$result_shorten->is_error, 'not http error';
 ok $result_shorten->shorten_url =~ m{^http://j[.]mp/\w{6}}, 'can get correct shorten_url';
 is $result_shorten->long_url, 'http://example.com/', 'can get correct long_url';
 
 #fail shorten
-ok $bitly = WebService::Bitly->new($args);
+ok $bitly = WebService::Bitly->new(%$args);
 $bitly->base_url('aaa');
 ok $result_shorten = $bitly->shorten('http://example.com/');
 ok $result_shorten->is_error, 'http error occured';

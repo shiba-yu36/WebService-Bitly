@@ -23,18 +23,18 @@ __PACKAGE__->mk_accessors(qw(
 ));
 
 sub new {
-    my ($class, $args) = @_;
-    if (!defined $args->{user_name} || !defined $args->{user_api_key}) {
+    my ($class, %args) = @_;
+    if (!defined $args{user_name} || !defined $args{user_api_key}) {
         carp("user_name and user_api_key are both required parameters.\n");
     }
 
-    $args->{ua} = LWP::UserAgent->new(
+    $args{ua} = LWP::UserAgent->new(
         env_proxy => 1,
         timeout   => 30,
     );
-    $args->{base_url} = 'http://api.bit.ly/';
+    $args{base_url} = 'http://api.bit.ly/';
 
-    my $self = $class->SUPER::new($args);
+    my $self = $class->SUPER::new({%args});
 }
 
 sub shorten {
@@ -66,19 +66,22 @@ sub shorten {
 }
 
 sub expand {
-    my ($self, $short_url) = @_;
-    if (!defined $short_url) {
-        carp("short_url is required parameter.\n");
+    my ($self, %args) = @_;
+    my $shorten_urls = $args{shorten_urls} || [];
+    my $hashes       = $args{hashes} || [];
+    if (!$shorten_urls && !$hashes) {
+        carp("either shorten_urls or hashes is required parameter.\n");
     }
 
     my $api_url = URI->new($self->base_url . "v3/expand");
        $api_url->query_param(login    => $self->user_name);
        $api_url->query_param(apiKey   => $self->user_api_key);
+       $api_url->query_param(format   => 'json');
        $api_url->query_param(x_login  => $self->end_user_name)    if $self->end_user_name;
        $api_url->query_param(x_apiKey => $self->end_user_api_key) if $self->end_user_api_key;
        $api_url->query_param(domain   => $self->domain)           if $self->domain;
-       $api_url->query_param(format   => 'json');
-       $api_url->query_param(shortUrl  => $short_url);
+       $api_url->query_param(shortUrl => reverse(@$shorten_urls)) if $shorten_urls;
+       $api_url->query_param(hash     => reverse(@$hashes))       if $hashes;
 
     my $response = $self->ua->get($api_url);
 

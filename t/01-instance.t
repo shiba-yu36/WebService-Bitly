@@ -12,7 +12,7 @@ my $args = {
     domain => 'j.mp',
 };
 
-ok my $bitly = WebService::Bitly->new($args);
+ok my $bitly = WebService::Bitly->new(%$args);
 is $bitly->user_name, $args->{user_name}, 'can get correct user_name';
 is $bitly->user_api_key, $args->{user_api_key}, 'can get correct user_api_key';
 is $bitly->end_user_name, $args->{end_user_name}, 'can get correct end_user_name';

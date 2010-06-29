@@ -12,7 +12,7 @@ my $args = {
     domain => 'j.mp',
 };
 
-ok my $bitly = WebService::Bitly->new($args);
+ok my $bitly = WebService::Bitly->new(%$args);
 ok my $validate_result = $bitly->validate_end_user_info;
 ok $validate_result->is_valid;
 
