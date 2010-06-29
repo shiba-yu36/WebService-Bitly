@@ -65,6 +65,34 @@ sub shorten {
     return WebService::Bitly::Result::Shorten->new($bitly_response);
 }
 
+sub expand {
+    my ($self, $short_url) = @_;
+    if (!defined $short_url) {
+        carp("short_url is required parameter.\n");
+    }
+
+    my $api_url = URI->new($self->base_url . "v3/expand");
+       $api_url->query_param(login    => $self->user_name);
+       $api_url->query_param(apiKey   => $self->user_api_key);
+       $api_url->query_param(x_login  => $self->end_user_name)    if $self->end_user_name;
+       $api_url->query_param(x_apiKey => $self->end_user_api_key) if $self->end_user_api_key;
+       $api_url->query_param(domain   => $self->domain)           if $self->domain;
+       $api_url->query_param(format   => 'json');
+       $api_url->query_param(shortUrl  => $short_url);
+
+    my $response = $self->ua->get($api_url);
+
+    if (!$response->is_success) {
+        return WebService::Bitly::Result::HTTPError->new({
+            status_code => $response->code,
+            status_txt  => $response->message,
+        });
+    }
+
+    my $bitly_response = from_json($response->{_content});
+    return WebService::Bitly::Result::Expand->new($bitly_response);
+}
+
 sub validate_end_user_info {
     my ($self) = @_;
 

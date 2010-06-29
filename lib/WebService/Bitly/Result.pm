@@ -7,6 +7,7 @@ use Carp;
 use WebService::Bitly::Result::Shorten;
 use WebService::Bitly::Result::Validate;
 use WebService::Bitly::Result::HTTPError;
+use WebService::Bitly::Result::Expand;
 
 use base qw(Class::Accessor::Fast);
 
