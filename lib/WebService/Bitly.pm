@@ -8,7 +8,7 @@ use URI;
 use URI::QueryParam;
 use LWP::UserAgent;
 use JSON;
-use WebService::Bitly::ResultShorten;
+use WebService::Bitly::Result;
 
 use base qw(Class::Accessor::Fast);
 
@@ -19,6 +19,7 @@ __PACKAGE__->mk_accessors(qw(
     end_user_api_key
     domain
     base_url
+    ua
 ));
 
 sub new {
@@ -26,24 +27,20 @@ sub new {
     if (!defined $args->{user_name} || !defined $args->{user_api_key}) {
         carp("user_name and user_api_key are both required parameters.\n");
     }
-    
-    my $self = bless {
-        user_name        => $args->{user_name},
-        user_api_key     => $args->{user_api_key},
-        end_user_name    => $args->{end_user_name},
-        end_user_api_key => $args->{end_user_api_key},
-        domain           => $args->{domain},
-        base_url         => 'http://api.bit.ly/',
-    }, $class;
+
+    $args->{ua} = LWP::UserAgent->new(
+        env_proxy => 1,
+        timeout   => 30,
+    );
+    $args->{base_url} = 'http://api.bit.ly/';
+
+    my $self = $class->SUPER::new($args);
 }
 
 sub shorten {
     my ($self, $url) = @_;
     if (!defined $url) {
         carp("url is required parameter.\n");
-    }
-    if (!defined $self->user_name || !defined $self->user_api_key) {
-        carp("user_name and user_api_key are both required. please set both.\n");
     }
 
     my $api_url = URI->new($self->base_url . "v3/shorten");
@@ -55,15 +52,53 @@ sub shorten {
        $api_url->query_param(format   => 'json');
        $api_url->query_param(longUrl  => $url);
 
-    my $ua = LWP::UserAgent->new(
-        env_proxy => 1,
-        timeout => 30,
-    );
-    my $response = $ua->get($api_url);
-    return if !$response->is_success;
+    my $response = $self->ua->get($api_url);
+
+    if (!$response->is_success) {
+        return WebService::Bitly::Result::HTTPError->new({
+            status_code => $response->code,
+            status_txt  => $response->message,
+        });
+    }
     
     my $bitly_response = from_json($response->{_content});
-    return WebService::Bitly::ResultShorten->new($bitly_response);
+    return WebService::Bitly::Result::Shorten->new($bitly_response);
+}
+
+sub validate_end_user_info {
+    my ($self) = @_;
+
+    my $api_url = URI->new($self->base_url . "v3/validate");
+       $api_url->query_param(format   => 'json');
+       $api_url->query_param(login    => $self->user_name);
+       $api_url->query_param(apiKey   => $self->user_api_key);
+       $api_url->query_param(x_login  => $self->end_user_name);
+       $api_url->query_param(x_apiKey => $self->end_user_api_key);
+
+    my $response = $self->ua->get($api_url);
+
+    if (!$response->is_success) {
+        return WebService::Bitly::Result::HTTPError->new({
+            status_code => $response->code,
+            status_txt  => $response->message,
+        });
+    }
+
+    my $bitly_response = from_json($response->{_content});
+    return WebService::Bitly::Result::Validate->new($bitly_response);
+}
+
+sub set_end_user_info {
+    my ($self, $end_user_name, $end_user_api_key) = @_;
+
+    if (!defined $end_user_name || !defined $end_user_api_key) {
+        carp("end_user_name and end_user_api_key are both required parameters.\n");
+    }
+
+    $self->end_user_name($end_user_name);
+    $self->end_user_api_key($end_user_api_key);
+    
+    return $self;
 }
 
 1;
