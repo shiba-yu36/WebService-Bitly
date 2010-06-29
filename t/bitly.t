@@ -12,10 +12,10 @@ use WebService::Bitly;
 use base qw(Test::Class);
 
 my $args = {
-    user_name => '',
-    user_api_key => '',
-    end_user_name => '',
-    end_user_api_key => '',
+    user_name => 'webservicebitlyuser',
+    user_api_key => 'R_40e8f7bb2f864248add7e3119ac12ea4',
+    end_user_name => 'webservicebitlyenduser',
+    end_user_api_key => 'R_7a0016587783a1cf72853d8004367e08',
     domain => 'j.mp',
 };
 
