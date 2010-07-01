@@ -17,6 +17,8 @@ __PACKAGE__->mk_accessors(qw(
 
     user_clicks
     global_clicks
+
+    url
 ));
 
 sub new {

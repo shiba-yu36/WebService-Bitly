@@ -150,6 +150,29 @@ sub test_026_bitly_pro_domain : Tests {
     is $bitly->bitly_pro_domain('bit.ly')->is_pro_domain, 0, 'should not pro domain';
 }
 
+sub test_027_lookup : Tests {
+    my $self = shift;
+    my $args = $self->args;
+
+    ok my $bitly = WebService::Bitly->new(%$args);
+    ok my $result_shorten1 = $bitly->shorten('http://example1.com');
+    ok my $result_shorten2 = $bitly->shorten('http://example2.com');
+
+    ok my $lookup = $bitly->lookup([
+        'http://example1.com',
+        'http://example2.com',
+    ]);
+
+    ok !$lookup->is_error;
+
+    my @lookup = $lookup->lookup_list;
+
+    is $lookup[0]->global_hash, $result_shorten1->global_hash, 'should get correct global hash';
+    is $lookup[0]->short_url, 'http://bit.ly/'.$result_shorten1->global_hash, 'should get correct short url';
+    is $lookup[1]->global_hash, $result_shorten2->global_hash, 'should get correct global hash';
+    is $lookup[1]->short_url, 'http://bit.ly/'.$result_shorten2->global_hash, 'should get correct short url';
+}
+
 __PACKAGE__->runtests;
 
 1;

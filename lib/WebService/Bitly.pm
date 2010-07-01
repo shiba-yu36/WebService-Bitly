@@ -182,4 +182,29 @@ sub bitly_pro_domain {
     return WebService::Bitly::Result::BitlyProDomain->new($bitly_response);
 }
 
+sub lookup {
+    my ($self, $urls) = @_;
+    if (!$urls) {
+        carp("urls is required parameter.\n");
+    }
+
+    my $api_url = URI->new($self->base_url . "v3/lookup");
+       $api_url->query_param(login    => $self->user_name);
+       $api_url->query_param(apiKey   => $self->user_api_key);
+       $api_url->query_param(format   => 'json');
+       $api_url->query_param(url      => reverse(@$urls));
+    
+    my $response = $self->ua->get($api_url);
+
+    if (!$response->is_success) {
+        return WebService::Bitly::Result::HTTPError->new({
+            status_code => $response->code,
+            status_txt  => $response->message,
+        });
+    }
+
+    my $bitly_response = from_json($response->{_content});
+    return WebService::Bitly::Result::Lookup->new($bitly_response);
+}
+
 1;
