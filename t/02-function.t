@@ -4,14 +4,32 @@ use warnings;
 
 use Test::More;
 use WebService::Bitly;
+use IO::Prompt;
+use IO::File;
 
-use base qw(Test::Class);
+use base qw(Test::Class Class::Accessor::Fast);
+
+__PACKAGE__->mk_accessors(qw( args ));
 
 sub api_input : Test(startup) {
+    my $self = shift;
+
     #APIキーやusernameの入力
+    my $user_name        = prompt 'input bit.ly user name: ';
+    my $user_api_key     = prompt 'input bit.ly user api key:';
+    my $end_user_name    = prompt 'input bit.ly end user name: ';
+    my $end_user_api_key = prompt 'input bit.ly end user api key: ';
+
+    $self->{args} = {
+        user_name        => $user_name,
+        user_api_key     => $user_api_key,
+        end_user_name    => $end_user_name,
+        end_user_api_key => $end_user_api_key,
+    };
 }
 
 sub test_020_instance : Test(5) {
+    my $self = shift;
     my $args = $self->args;
     ok my $bitly = WebService::Bitly->new(%$args);
     is $bitly->user_name, $args->{user_name}, 'can get correct user_name';
@@ -22,12 +40,13 @@ sub test_020_instance : Test(5) {
 }
 
 sub test_021_shorten : Tests {
+    my $self = shift;
     my $args = $self->args;
 
     ok my $bitly = WebService::Bitly->new(%$args);
     ok my $result_shorten = $bitly->shorten('http://example.com/');
     ok !$result_shorten->is_error, 'not http error';
-    ok $result_shorten->shorten_url =~ m{^http://j[.]mp/\w{6}}, 'can get correct shorten_url';
+    ok $result_shorten->shorten_url =~ m{^http://bit[.]ly/\w{6}}, 'can get correct shorten_url';
     is $result_shorten->long_url, 'http://example.com/', 'can get correct long_url';
 
     #fail shorten
@@ -38,6 +57,7 @@ sub test_021_shorten : Tests {
 }
 
 sub test_022_set_end_user_info : Tests {
+    my $self = shift;
     my $args = $self->args;
 
     ok my $bitly = WebService::Bitly->new(
@@ -50,6 +70,7 @@ sub test_022_set_end_user_info : Tests {
 }
 
 sub test_023_validate : Tests {
+    my $self = shift;
     my $args = $self->args;
 
     ok my $bitly = WebService::Bitly->new(%$args);
@@ -59,17 +80,18 @@ sub test_023_validate : Tests {
     ok $bitly->set_end_user_info('test', 'test'), 'both parameter are invalid';
     ok !$bitly->validate_end_user_info->is_valid;
 
-    $bitly->set_end_user_info('', $args->{end_user_name}), 'end_user_name is empty';
-    ok $bitly->validate_end_user_info->is_valid;
+#     $bitly->set_end_user_info('', $args->{end_user_name});
+#     ok $bitly->validate_end_user_info->is_valid;
 
-    $bitly->set_end_user_info($args->{end_user_api_key}, ''), 'end_user_api_key is empty';
-    ok $bitly->validate_end_user_info->is_valid;
+#     $bitly->set_end_user_info($args->{end_user_api_key}, '');
+#     ok $bitly->validate_end_user_info->is_valid;
 
-    $bitly->set_end_user_info('', '');
-    ok $bitly->validate_end_user_info->is_valid, 'both parameter are empty';
+#     $bitly->set_end_user_info('', '');
+#     ok $bitly->validate_end_user_info->is_valid, 'both parameter are empty';
 }
 
 sub test_024_expand : Tests {
+    my $self = shift;
     my $args = $self->args;
 
     ok my $bitly = WebService::Bitly->new(%$args);
@@ -88,6 +110,12 @@ sub test_024_expand : Tests {
     is $expand_lists[1]->long_url, 'http://example2.com';
     is $expand_lists[2]->long_url, 'http://example1.com';
     is $expand_lists[3]->long_url, 'http://example2.com';
+}
+
+sub test_025_clicks : Tests {
+    my $self = shift;
+    my $args = $self->args;
+
 }
 
 __PACKAGE__->runtests;
