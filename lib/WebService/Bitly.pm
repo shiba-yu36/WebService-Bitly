@@ -67,20 +67,17 @@ sub shorten {
 
 sub expand {
     my ($self, %args) = @_;
-    my $shorten_urls = $args{shorten_urls} || [];
-    my $hashes       = $args{hashes} || [];
-    if (!$shorten_urls && !$hashes) {
-        carp("either shorten_urls or hashes is required parameter.\n");
+    my $short_urls = $args{short_urls} || [];
+    my $hashes     = $args{hashes} || [];
+    if (!$short_urls && !$hashes) {
+        carp("either short_urls or hashes is required parameter.\n");
     }
 
     my $api_url = URI->new($self->base_url . "v3/expand");
        $api_url->query_param(login    => $self->user_name);
        $api_url->query_param(apiKey   => $self->user_api_key);
        $api_url->query_param(format   => 'json');
-       $api_url->query_param(x_login  => $self->end_user_name)    if $self->end_user_name;
-       $api_url->query_param(x_apiKey => $self->end_user_api_key) if $self->end_user_api_key;
-       $api_url->query_param(domain   => $self->domain)           if $self->domain;
-       $api_url->query_param(shortUrl => reverse(@$shorten_urls)) if $shorten_urls;
+       $api_url->query_param(shortUrl => reverse(@$short_urls))   if $short_urls;
        $api_url->query_param(hash     => reverse(@$hashes))       if $hashes;
 
     my $response = $self->ua->get($api_url);
@@ -130,6 +127,59 @@ sub set_end_user_info {
     $self->end_user_api_key($end_user_api_key);
     
     return $self;
+}
+
+sub clicks {
+    my ($self, %args) = @_;
+    my $short_urls   = $args{short_urls} || [];
+    my $hashes       = $args{hashes} || [];
+    if (!$short_urls && !$hashes) {
+        carp("either short_urls or hashes is required parameter.\n");
+    }
+
+    my $api_url = URI->new($self->base_url . "v3/clicks");
+       $api_url->query_param(login    => $self->user_name);
+       $api_url->query_param(apiKey   => $self->user_api_key);
+       $api_url->query_param(format   => 'json');
+       $api_url->query_param(shortUrl => reverse(@$short_urls))   if $short_urls;
+       $api_url->query_param(hash     => reverse(@$hashes))       if $hashes;
+
+    my $response = $self->ua->get($api_url);
+
+    if (!$response->is_success) {
+        return WebService::Bitly::Result::HTTPError->new({
+            status_code => $response->code,
+            status_txt  => $response->message,
+        });
+    }
+
+    my $bitly_response = from_json($response->{_content});
+    return WebService::Bitly::Result::Clicks->new($bitly_response);
+}
+
+sub bitly_pro_domain {
+    my ($self, $domain) = @_;
+    if (!$domain) {
+        carp("domain is required parameter.\n");
+    }
+
+    my $api_url = URI->new($self->base_url . "v3/bitly_pro_domain");
+       $api_url->query_param(format   => 'json');
+       $api_url->query_param(login    => $self->user_name);
+       $api_url->query_param(apiKey   => $self->user_api_key);
+       $api_url->query_param(domain   => $domain);
+
+    my $response = $self->ua->get($api_url);
+
+    if (!$response->is_success) {
+        return WebService::Bitly::Result::HTTPError->new({
+            status_code => $response->code,
+            status_txt  => $response->message,
+        });
+    }
+
+    my $bitly_response = from_json($response->{_content});
+    return WebService::Bitly::Result::BitlyProDomain->new($bitly_response);
 }
 
 1;

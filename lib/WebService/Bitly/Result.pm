@@ -8,6 +8,8 @@ use WebService::Bitly::Result::Shorten;
 use WebService::Bitly::Result::Validate;
 use WebService::Bitly::Result::HTTPError;
 use WebService::Bitly::Result::Expand;
+use WebService::Bitly::Result::Clicks;
+use WebService::Bitly::Result::BitlyProDomain;
 
 use base qw(Class::Accessor::Fast);
 

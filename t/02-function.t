@@ -17,14 +17,12 @@ sub api_input : Test(startup) {
     #APIキーやusernameの入力
     my $user_name        = prompt 'input bit.ly user name: ';
     my $user_api_key     = prompt 'input bit.ly user api key:';
-    my $end_user_name    = prompt 'input bit.ly end user name: ';
-    my $end_user_api_key = prompt 'input bit.ly end user api key: ';
 
     $self->{args} = {
         user_name        => $user_name,
         user_api_key     => $user_api_key,
-        end_user_name    => $end_user_name,
-        end_user_api_key => $end_user_api_key,
+        end_user_name    => $user_name,
+        end_user_api_key => $user_api_key,
     };
 }
 
@@ -46,7 +44,7 @@ sub test_021_shorten : Tests {
     ok my $bitly = WebService::Bitly->new(%$args);
     ok my $result_shorten = $bitly->shorten('http://example.com/');
     ok !$result_shorten->is_error, 'not http error';
-    ok $result_shorten->shorten_url =~ m{^http://bit[.]ly/\w{6}}, 'can get correct shorten_url';
+    ok $result_shorten->short_url =~ m{^http://bit[.]ly/\w{6}}, 'can get correct short_url';
     is $result_shorten->long_url, 'http://example.com/', 'can get correct long_url';
 
     #fail shorten
@@ -99,23 +97,57 @@ sub test_024_expand : Tests {
     ok my $result_shorten2 = $bitly->shorten('http://example2.com');
 
     ok my $result_expand = $bitly->expand(
-        shorten_urls => [($result_shorten1->shorten_url, $result_shorten2->shorten_url)],
+        short_urls => [($result_shorten1->short_url, $result_shorten2->short_url)],
         hashes       => [($result_shorten1->hash, $result_shorten2->hash)],
     );
     ok !$result_expand->is_error;
 
-    my @expand_lists = $result_expand->expand_lists;
+    my @expand_list = $result_expand->expand_list;
 
-    is $expand_lists[0]->long_url, 'http://example1.com';
-    is $expand_lists[1]->long_url, 'http://example2.com';
-    is $expand_lists[2]->long_url, 'http://example1.com';
-    is $expand_lists[3]->long_url, 'http://example2.com';
+    is $expand_list[0]->long_url, 'http://example1.com';
+    is $expand_list[1]->long_url, 'http://example2.com';
+    is $expand_list[2]->long_url, 'http://example1.com';
+    is $expand_list[3]->long_url, 'http://example2.com';
 }
 
 sub test_025_clicks : Tests {
     my $self = shift;
     my $args = $self->args;
 
+    ok my $bitly = WebService::Bitly->new(%$args);
+    ok my $result_shorten = $bitly->shorten('http://example1.com');
+
+    ok my $result_clicks = $bitly->clicks(
+        short_urls => [$result_shorten->short_url, 'http://foobarbaz.jp/a35.akasa'],
+        hashes       => [$result_shorten->hash, 'a35.akasa'],
+    );
+    ok !$result_clicks->is_error;
+
+    my @clicks_list = $result_clicks->clicks_list;
+
+    ok !$clicks_list[0]->is_error, 'error should not  occur';
+    is $clicks_list[0]->short_url, $result_shorten->short_url, 'should get correct short_url';
+    is $clicks_list[0]->user_clicks, 0, 'should get user clicks';
+    is $clicks_list[0]->global_clicks, 0, 'should get global clicks';
+    
+    ok $clicks_list[1]->is_error, 'error should occur';
+    
+    ok !$clicks_list[2]->is_error, 'error should not  occur';
+    is $clicks_list[2]->hash, $result_shorten->hash, 'should get correct hash';
+    is $clicks_list[2]->user_clicks, 0, 'should get user clicks';
+    is $clicks_list[2]->global_clicks, 0, 'should get global clicks';
+    
+    ok $clicks_list[3]->is_error, 'error should occur';
+}
+
+sub test_026_bitly_pro_domain : Tests {
+    my $self = shift;
+    my $args = $self->args;
+
+    ok my $bitly = WebService::Bitly->new(%$args);
+
+    is $bitly->bitly_pro_domain('nyti.ms')->is_pro_domain, 1, 'should pro doman';
+    is $bitly->bitly_pro_domain('bit.ly')->is_pro_domain, 0, 'should not pro domain';
 }
 
 __PACKAGE__->runtests;

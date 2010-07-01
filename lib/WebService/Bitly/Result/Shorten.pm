@@ -11,7 +11,7 @@ sub new {
     my $self = $class->SUPER::new($result_shorten);
 }
 
-sub shorten_url {
+sub short_url {
     return shift->data->{url};
 }
 
