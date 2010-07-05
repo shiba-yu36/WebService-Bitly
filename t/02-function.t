@@ -72,21 +72,20 @@ sub test_023_validate : Tests {
     my $args = $self->args;
 
     ok my $bitly = WebService::Bitly->new(%$args);
-    ok my $validate_result = $bitly->validate_end_user_info;
+    ok my $validate_result = $bitly->validate;
     ok $validate_result->is_valid;
 
     ok $bitly->set_end_user_info('test', 'test'), 'both parameter are invalid';
-    ok !$bitly->validate_end_user_info->is_valid;
+    ok !$bitly->validate->is_valid;
 
-    local $TODO = 'どちらか一方でもからのときは通らない';
     $bitly->set_end_user_info('', $args->{end_user_name});
-    ok $bitly->validate_end_user_info->is_valid;
+    ok $bitly->validate->is_error;
 
     $bitly->set_end_user_info($args->{end_user_api_key}, '');
-    ok $bitly->validate_end_user_info->is_valid;
+    ok $bitly->validate->is_error;
 
     $bitly->set_end_user_info('', '');
-    ok $bitly->validate_end_user_info->is_valid, 'both parameter are empty';
+    ok $bitly->validate->is_error, 'both parameter are empty';
 }
 
 sub test_024_expand : Tests {

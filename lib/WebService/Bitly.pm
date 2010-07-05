@@ -102,7 +102,7 @@ sub expand {
     return WebService::Bitly::Result::Expand->new($bitly_response);
 }
 
-sub validate_end_user_info {
+sub validate {
     my ($self) = @_;
 
     my $api_url = URI->new($self->base_url . "v3/validate");
