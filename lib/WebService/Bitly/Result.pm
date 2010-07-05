@@ -4,16 +4,6 @@ use warnings;
 use strict;
 use Carp;
 
-use WebService::Bitly::Result::Shorten;
-use WebService::Bitly::Result::Validate;
-use WebService::Bitly::Result::HTTPError;
-use WebService::Bitly::Result::Expand;
-use WebService::Bitly::Result::Clicks;
-use WebService::Bitly::Result::BitlyProDomain;
-use WebService::Bitly::Result::Lookup;
-use WebService::Bitly::Result::Authenticate;
-use WebService::Bitly::Result::Info;
-
 use base qw(Class::Accessor::Fast);
 
 __PACKAGE__->mk_accessors(qw(

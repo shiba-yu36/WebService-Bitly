@@ -11,18 +11,18 @@ use base qw(WebService::Bitly::Result);
 sub new {
     my ($class, $result_expand) = @_;
     my $self = $class->SUPER::new($result_expand);
-    my $expand_list;
+    my $results;
 
     for my $expand (@{$self->data->{expand}}) {
-        push @$expand_list, WebService::Bitly::Entry->new($expand);
+        push @$results, WebService::Bitly::Entry->new($expand);
     }
-    $self->{expand_list} = $expand_list;
+    $self->{results} = $results;
 
     return $self;
 }
 
-sub expand_list {
-    return @{shift->{expand_list}};
+sub results {
+    return @{shift->{results}};
 }
 
 1;

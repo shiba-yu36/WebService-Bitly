@@ -13,18 +13,18 @@ sub new {
 
     my $self = $class->SUPER::new($result_lookup);
 
-    my $lookup_list;
+    my $results;
 
     for my $lookup (@{ $self->data->{lookup} }) {
-        push @$lookup_list, WebService::Bitly::Entry->new($lookup);
+        push @$results, WebService::Bitly::Entry->new($lookup);
     }
-    $self->{lookup_list} = $lookup_list;
+    $self->{results} = $results;
 
     return $self;
 }
 
-sub lookup_list {
-    return @{shift->{lookup_list}};
+sub results {
+    return @{shift->{results}};
 }
 
 1;

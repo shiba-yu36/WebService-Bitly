@@ -17,7 +17,6 @@ sub api_input : Test(startup) {
     #APIキーやusernameの入力
     my $user_name        = prompt 'input bit.ly user name: ';
     my $user_api_key     = prompt 'input bit.ly user api key:';
-    my $user_password    = prompt('input bit.ly user password:', -e=>'*');
 
     $self->{args} = {
         user_name         => $user_name,
@@ -25,8 +24,6 @@ sub api_input : Test(startup) {
         end_user_name     => $user_name,
         end_user_api_key  => $user_api_key,
     };
-
-    $self->{password} = $user_password;
 }
 
 sub test_020_instance : Test(5) {
@@ -106,7 +103,7 @@ sub test_024_expand : Tests {
     );
     ok !$result_expand->is_error;
 
-    my @expand_list = $result_expand->expand_list;
+    my @expand_list = $result_expand->results;
 
     is $expand_list[0]->long_url, 'http://example1.com';
     is $expand_list[1]->long_url, 'http://example2.com';
@@ -127,7 +124,7 @@ sub test_025_clicks : Tests {
     );
     ok !$result_clicks->is_error;
 
-    my @clicks_list = $result_clicks->clicks_list;
+    my @clicks_list = $result_clicks->results;
 
     ok !$clicks_list[0]->is_error, 'error should not  occur';
     is $clicks_list[0]->short_url, $result_shorten->short_url, 'should get correct short_url';
@@ -169,7 +166,7 @@ sub test_027_lookup : Tests {
 
     ok !$lookup->is_error;
 
-    my @lookup = $lookup->lookup_list;
+    my @lookup = $lookup->results;
 
     is $lookup[0]->global_hash, $result_shorten1->global_hash, 'should get correct global hash';
     is $lookup[0]->short_url, 'http://bit.ly/'.$result_shorten1->global_hash, 'should get correct short url';
@@ -209,7 +206,7 @@ sub test_029_info : Tests {
     );
     ok !$result_info->is_error;
 
-    my @info_list = $result_info->info_list;
+    my @info_list = $result_info->results;
 
     ok !$info_list[0]->is_error, 'error should not occur';
     is $info_list[0]->title, 'Google', 'should get correct title';

@@ -13,18 +13,18 @@ sub new {
 
     my $self = $class->SUPER::new($result_clicks);
 
-    my $clicks_list;
+    my $results;
 
     for my $clicks (@{ $self->data->{clicks} }) {
-        push @$clicks_list, WebService::Bitly::Entry->new($clicks);
+        push @$results, WebService::Bitly::Entry->new($clicks);
     }
-    $self->{clicks_list} = $clicks_list;
+    $self->{results} = $results;
 
     return $self;
 }
 
-sub clicks_list {
-    return @{shift->{clicks_list}};
+sub results {
+    return @{shift->{results}};
 }
 
 1;
