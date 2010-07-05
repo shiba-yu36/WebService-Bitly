@@ -11,6 +11,8 @@ use WebService::Bitly::Result::Expand;
 use WebService::Bitly::Result::Clicks;
 use WebService::Bitly::Result::BitlyProDomain;
 use WebService::Bitly::Result::Lookup;
+use WebService::Bitly::Result::Authenticate;
+use WebService::Bitly::Result::Info;
 
 use base qw(Class::Accessor::Fast);
 

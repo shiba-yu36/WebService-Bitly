@@ -19,6 +19,8 @@ __PACKAGE__->mk_accessors(qw(
     global_clicks
 
     url
+
+    title
 ));
 
 sub new {

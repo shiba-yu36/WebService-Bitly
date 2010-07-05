@@ -17,13 +17,16 @@ sub api_input : Test(startup) {
     #APIキーやusernameの入力
     my $user_name        = prompt 'input bit.ly user name: ';
     my $user_api_key     = prompt 'input bit.ly user api key:';
+    my $user_password    = prompt('input bit.ly user password:', -e=>'*');
 
     $self->{args} = {
-        user_name        => $user_name,
-        user_api_key     => $user_api_key,
-        end_user_name    => $user_name,
-        end_user_api_key => $user_api_key,
+        user_name         => $user_name,
+        user_api_key      => $user_api_key,
+        end_user_name     => $user_name,
+        end_user_api_key  => $user_api_key,
     };
+
+    $self->{password} = $user_password;
 }
 
 sub test_020_instance : Test(5) {
@@ -78,14 +81,15 @@ sub test_023_validate : Tests {
     ok $bitly->set_end_user_info('test', 'test'), 'both parameter are invalid';
     ok !$bitly->validate_end_user_info->is_valid;
 
-#     $bitly->set_end_user_info('', $args->{end_user_name});
-#     ok $bitly->validate_end_user_info->is_valid;
+    local $TODO = 'どちらか一方でもからのときは通らない';
+    $bitly->set_end_user_info('', $args->{end_user_name});
+    ok $bitly->validate_end_user_info->is_valid;
 
-#     $bitly->set_end_user_info($args->{end_user_api_key}, '');
-#     ok $bitly->validate_end_user_info->is_valid;
+    $bitly->set_end_user_info($args->{end_user_api_key}, '');
+    ok $bitly->validate_end_user_info->is_valid;
 
-#     $bitly->set_end_user_info('', '');
-#     ok $bitly->validate_end_user_info->is_valid, 'both parameter are empty';
+    $bitly->set_end_user_info('', '');
+    ok $bitly->validate_end_user_info->is_valid, 'both parameter are empty';
 }
 
 sub test_024_expand : Tests {
@@ -171,6 +175,53 @@ sub test_027_lookup : Tests {
     is $lookup[0]->short_url, 'http://bit.ly/'.$result_shorten1->global_hash, 'should get correct short url';
     is $lookup[1]->global_hash, $result_shorten2->global_hash, 'should get correct global hash';
     is $lookup[1]->short_url, 'http://bit.ly/'.$result_shorten2->global_hash, 'should get correct short url';
+}
+
+sub test_028_authenticate : Tests {
+    my $self = shift;
+    my $args = $self->args;
+    return("this test cannot succeeded, unless user allow authenticate access.");
+
+    ok my $bitly = WebService::Bitly->new(%$args);
+    ok my $authenticate = $bitly->authenticate($args->{end_user_name}, $self->{password});
+
+    ok !$authenticate->is_error, 'error should not occur';
+    ok $authenticate->is_success, 'authenticate should be success';
+    is $authenticate->user_name, $args->{end_user_name}, 'user name should be correct';
+    is $authenticate->api_key, $args->{end_user_api_key}, 'user api key should be correct';
+
+    $bitly->set_end_user_info('error', 'error_api_key');
+    ok $authenticate = $bitly->authenticate($args->{end_user_name}, $self->{password});
+    ok !$authenticate->is_error, 'error should not occur';
+    ok !$authenticate->is_success, 'authenticate should not be success'
+}
+
+sub test_029_info : Tests {
+    my $self = shift;
+    my $args = $self->args;
+
+    ok my $bitly = WebService::Bitly->new(%$args);
+    ok my $result_shorten = $bitly->shorten('http://www.google.co.jp/');
+
+    ok my $result_info = $bitly->info(
+        short_urls   => [$result_shorten->short_url, 'http://bit.ly/bad-url.'],
+        hashes       => [$result_shorten->hash, 'bad-url.'],
+    );
+    ok !$result_info->is_error;
+
+    my @info_list = $result_info->info_list;
+
+    ok !$info_list[0]->is_error, 'error should not occur';
+    is $info_list[0]->title, 'Google', 'should get correct title';
+    is $info_list[0]->user_hash, $result_shorten->hash, 'should get correct short url';
+    
+    ok $info_list[1]->is_error;
+    
+    ok !$info_list[2]->is_error, 'error should not occur';
+    is $info_list[2]->title, 'Google', 'should get correct title';
+    is $info_list[2]->short_url, $result_shorten->short_url, 'should get correct hash';
+
+    ok $info_list[3]->is_error;
 }
 
 __PACKAGE__->runtests;

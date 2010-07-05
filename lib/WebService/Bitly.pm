@@ -207,4 +207,56 @@ sub lookup {
     return WebService::Bitly::Result::Lookup->new($bitly_response);
 }
 
+sub authenticate {
+    my ($self, $end_user_name, $end_user_password) = @_;
+
+    my $api_url = URI->new($self->base_url . "v3/authenticate");
+
+    my $response = $self->ua->post($api_url, [
+        format     => 'json',
+        login      => $self->user_name,
+        apiKey     => $self->user_api_key,
+        x_login    => $end_user_name,
+        x_password => $end_user_password,
+    ]);
+
+    if (!$response->is_success) {
+        return WebService::Bitly::Result::HTTPError->new({
+            status_code => $response->code,
+            status_txt  => $response->message,
+        });
+    }
+
+    my $bitly_response = from_json($response->{_content});
+    return WebService::Bitly::Result::Autenticate->new($bitly_response);
+}
+
+sub info {
+    my ($self, %args) = @_;
+    my $short_urls   = $args{short_urls} || [];
+    my $hashes       = $args{hashes} || [];
+    if (!$short_urls && !$hashes) {
+        carp("either short_urls or hashes is required parameter.\n");
+    }
+
+    my $api_url = URI->new($self->base_url . "v3/info");
+       $api_url->query_param(login    => $self->user_name);
+       $api_url->query_param(apiKey   => $self->user_api_key);
+       $api_url->query_param(format   => 'json');
+       $api_url->query_param(shortUrl => reverse(@$short_urls))   if $short_urls;
+       $api_url->query_param(hash     => reverse(@$hashes))       if $hashes;
+
+    my $response = $self->ua->get($api_url);
+
+    if (!$response->is_success) {
+        return WebService::Bitly::Result::HTTPError->new({
+            status_code => $response->code,
+            status_txt  => $response->message,
+        });
+    }
+
+    my $bitly_response = from_json($response->{_content});
+    return WebService::Bitly::Result::Info->new($bitly_response);
+}
+
 1;
