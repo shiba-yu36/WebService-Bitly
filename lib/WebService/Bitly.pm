@@ -27,6 +27,7 @@ __PACKAGE__->mk_accessors(qw(
     end_user_name
     end_user_api_key
     domain
+    version
     base_url
     ua
 ));
@@ -37,6 +38,7 @@ sub new {
         carp("user_name and user_api_key are both required parameters.\n");
     }
 
+    $args{version} = $args{version} || 'v3';
     $args{ua} = LWP::UserAgent->new(
         env_proxy => 1,
         timeout   => 30,
@@ -52,7 +54,7 @@ sub shorten {
         carp("url is required parameter.\n");
     }
 
-    my $api_url = URI->new($self->base_url . "v3/shorten");
+    my $api_url = URI->new($self->base_url . $self->version . "/shorten");
        $api_url->query_param(login    => $self->user_name);
        $api_url->query_param(apiKey   => $self->user_api_key);
        $api_url->query_param(x_login  => $self->end_user_name)    if $self->end_user_name;
@@ -82,7 +84,7 @@ sub expand {
         carp("either short_urls or hashes is required parameter.\n");
     }
 
-    my $api_url = URI->new($self->base_url . "v3/expand");
+    my $api_url = URI->new($self->base_url . $self->version . "/expand");
        $api_url->query_param(login    => $self->user_name);
        $api_url->query_param(apiKey   => $self->user_api_key);
        $api_url->query_param(format   => 'json');
@@ -105,7 +107,7 @@ sub expand {
 sub validate {
     my ($self) = @_;
 
-    my $api_url = URI->new($self->base_url . "v3/validate");
+    my $api_url = URI->new($self->base_url . $self->version . "/validate");
        $api_url->query_param(format   => 'json');
        $api_url->query_param(login    => $self->user_name);
        $api_url->query_param(apiKey   => $self->user_api_key);
@@ -146,7 +148,7 @@ sub clicks {
         carp("either short_urls or hashes is required parameter.\n");
     }
 
-    my $api_url = URI->new($self->base_url . "v3/clicks");
+    my $api_url = URI->new($self->base_url . $self->version . "/clicks");
        $api_url->query_param(login    => $self->user_name);
        $api_url->query_param(apiKey   => $self->user_api_key);
        $api_url->query_param(format   => 'json');
@@ -172,7 +174,7 @@ sub bitly_pro_domain {
         carp("domain is required parameter.\n");
     }
 
-    my $api_url = URI->new($self->base_url . "v3/bitly_pro_domain");
+    my $api_url = URI->new($self->base_url . $self->version . "/bitly_pro_domain");
        $api_url->query_param(format   => 'json');
        $api_url->query_param(login    => $self->user_name);
        $api_url->query_param(apiKey   => $self->user_api_key);
@@ -197,7 +199,7 @@ sub lookup {
         carp("urls is required parameter.\n");
     }
 
-    my $api_url = URI->new($self->base_url . "v3/lookup");
+    my $api_url = URI->new($self->base_url . $self->version . "/lookup");
        $api_url->query_param(login    => $self->user_name);
        $api_url->query_param(apiKey   => $self->user_api_key);
        $api_url->query_param(format   => 'json');
@@ -219,7 +221,7 @@ sub lookup {
 sub authenticate {
     my ($self, $end_user_name, $end_user_password) = @_;
 
-    my $api_url = URI->new($self->base_url . "v3/authenticate");
+    my $api_url = URI->new($self->base_url . $self->version . "/authenticate");
 
     my $response = $self->ua->post($api_url, [
         format     => 'json',
@@ -248,7 +250,7 @@ sub info {
         carp("either short_urls or hashes is required parameter.\n");
     }
 
-    my $api_url = URI->new($self->base_url . "v3/info");
+    my $api_url = URI->new($self->base_url . $self->version . "/info");
        $api_url->query_param(login    => $self->user_name);
        $api_url->query_param(apiKey   => $self->user_api_key);
        $api_url->query_param(format   => 'json');
