@@ -1,0 +1,22 @@
+---
+abstract: 'The great new WebService::Bitly!'
+author:
+  - 'Yuki Shibazaki <shiba1029196473@gmail.com>'
+build_requires:
+  ExtUtils::MakeMaker: 6.42
+configure_requires:
+  ExtUtils::MakeMaker: 6.42
+distribution_type: module
+generated_by: 'Module::Install version 0.95'
+license: gpl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: WebService-Bitly
+no_index:
+  directory:
+    - inc
+    - t
+resources:
+  license: http://opensource.org/licenses/gpl-license.php
+version: 0.01
