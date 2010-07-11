@@ -5,7 +5,6 @@ use warnings;
 use Test::More;
 use WebService::Bitly;
 use IO::Prompt;
-use IO::File;
 
 use base qw(Test::Class Class::Accessor::Fast);
 
