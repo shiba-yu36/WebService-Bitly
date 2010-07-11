@@ -15,8 +15,8 @@ sub api_input : Test(startup) {
     my $self = shift;
 
     #APIキーやusernameの入力
-    my $user_name        = prompt 'input bit.ly user name: ';
-    my $user_api_key     = prompt 'input bit.ly user api key:';
+    my $user_name        = prompt 'input bit.ly test user name: ';
+    my $user_api_key     = prompt 'input bit.ly test user api key:';
 
     $self->{args} = {
         user_name         => $user_name,
@@ -29,12 +29,19 @@ sub api_input : Test(startup) {
 sub test_020_instance : Test(5) {
     my $self = shift;
     my $args = $self->args;
-    ok my $bitly = WebService::Bitly->new(%$args);
+    ok my $bitly = WebService::Bitly->new(
+        %$args,
+        domain  => 'j.mp',
+        version => 'v3',
+    );
+
+    isa_ok $bitly, 'WebService::Bitly', 'is correct object';
     is $bitly->user_name, $args->{user_name}, 'can get correct user_name';
     is $bitly->user_api_key, $args->{user_api_key}, 'can get correct user_api_key';
     is $bitly->end_user_name, $args->{end_user_name}, 'can get correct end_user_name';
     is $bitly->end_user_api_key, $args->{end_user_api_key}, 'can get correct end_user_api_key';
-    is $bitly->domain, $args->{domain}, 'can get correct domain';
+    is $bitly->domain, 'j.mp', 'can get correct domain';
+    is $bitly->version, 'v3', 'can get correct version';
 }
 
 sub test_021_shorten : Tests {
@@ -43,15 +50,11 @@ sub test_021_shorten : Tests {
 
     ok my $bitly = WebService::Bitly->new(%$args);
     ok my $result_shorten = $bitly->shorten('http://example.com/');
+    
+    isa_ok $result_shorten, 'WebService::Bitly::Result::Shorten', 'is correct object';
     ok !$result_shorten->is_error, 'not http error';
     ok $result_shorten->short_url =~ m{^http://bit[.]ly/\w{6}}, 'can get correct short_url';
     is $result_shorten->long_url, 'http://example.com/', 'can get correct long_url';
-
-    #fail shorten
-    ok $bitly = WebService::Bitly->new(%$args);
-    $bitly->base_url('aaa');
-    ok $result_shorten = $bitly->shorten('http://example.com/');
-    ok $result_shorten->is_error, 'http error occured';
 }
 
 sub test_022_set_end_user_info : Tests {
@@ -100,6 +103,7 @@ sub test_024_expand : Tests {
         short_urls => [($result_shorten1->short_url, $result_shorten2->short_url)],
         hashes       => [($result_shorten1->hash, $result_shorten2->hash)],
     );
+    isa_ok $result_expand, 'WebService::Bitly::Result::Expand', 'is correct object';
     ok !$result_expand->is_error;
 
     my @expand_list = $result_expand->results;
@@ -121,6 +125,7 @@ sub test_025_clicks : Tests {
         short_urls => [$result_shorten->short_url, 'http://foobarbaz.jp/a35.akasa'],
         hashes       => [$result_shorten->hash, 'a35.akasa'],
     );
+    isa_ok $result_clicks, 'WebService::Bitly::Result::Clicks', 'is correct object';
     ok !$result_clicks->is_error;
 
     my @clicks_list = $result_clicks->results;
@@ -129,14 +134,14 @@ sub test_025_clicks : Tests {
     is $clicks_list[0]->short_url, $result_shorten->short_url, 'should get correct short_url';
     is $clicks_list[0]->user_clicks, 0, 'should get user clicks';
     is $clicks_list[0]->global_clicks, 0, 'should get global clicks';
-    
+
     ok $clicks_list[1]->is_error, 'error should occur';
-    
+
     ok !$clicks_list[2]->is_error, 'error should not  occur';
     is $clicks_list[2]->hash, $result_shorten->hash, 'should get correct hash';
     is $clicks_list[2]->user_clicks, 0, 'should get user clicks';
     is $clicks_list[2]->global_clicks, 0, 'should get global clicks';
-    
+
     ok $clicks_list[3]->is_error, 'error should occur';
 }
 
@@ -163,6 +168,7 @@ sub test_027_lookup : Tests {
         'http://example2.com',
     ]);
 
+    isa_ok $lookup, 'WebService::Bitly::Result::Lookup', 'is correct object';
     ok !$lookup->is_error;
 
     my @lookup = $lookup->results;
@@ -203,6 +209,7 @@ sub test_029_info : Tests {
         short_urls   => [$result_shorten->short_url, 'http://bit.ly/bad-url.'],
         hashes       => [$result_shorten->hash, 'bad-url.'],
     );
+    isa_ok $result_info, 'WebService::Bitly::Result::Info', 'is correct object';
     ok !$result_info->is_error;
 
     my @info_list = $result_info->results;
@@ -210,14 +217,26 @@ sub test_029_info : Tests {
     ok !$info_list[0]->is_error, 'error should not occur';
     is $info_list[0]->title, 'Google', 'should get correct title';
     is $info_list[0]->user_hash, $result_shorten->hash, 'should get correct short url';
-    
+
     ok $info_list[1]->is_error;
-    
+
     ok !$info_list[2]->is_error, 'error should not occur';
     is $info_list[2]->title, 'Google', 'should get correct title';
     is $info_list[2]->short_url, $result_shorten->short_url, 'should get correct hash';
 
     ok $info_list[3]->is_error;
+}
+
+sub test_030_http_error : Tests {
+    my $self = shift;
+    my $args = $self->args;
+
+    ok my $bitly = WebService::Bitly->new(
+        %$args,
+        base_url => 'aaa',
+    );
+    #fail shorten
+    ok $bitly = WebService::Bitly->new(%$args);
 }
 
 __PACKAGE__->runtests;

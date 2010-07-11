@@ -28,6 +28,7 @@ __PACKAGE__->mk_accessors(qw(
     end_user_api_key
     domain
     version
+
     base_url
     ua
 ));
@@ -71,7 +72,7 @@ sub shorten {
             status_txt  => $response->message,
         });
     }
-    
+
     my $bitly_response = from_json($response->{_content});
     return WebService::Bitly::Result::Shorten->new($bitly_response);
 }
@@ -136,7 +137,7 @@ sub set_end_user_info {
 
     $self->end_user_name($end_user_name);
     $self->end_user_api_key($end_user_api_key);
-    
+
     return $self;
 }
 
@@ -204,7 +205,7 @@ sub lookup {
        $api_url->query_param(apiKey   => $self->user_api_key);
        $api_url->query_param(format   => 'json');
        $api_url->query_param(url      => reverse(@$urls));
-    
+
     my $response = $self->ua->get($api_url);
 
     if (!$response->is_success) {
