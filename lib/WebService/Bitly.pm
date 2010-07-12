@@ -3,6 +3,7 @@ package WebService::Bitly;
 use warnings;
 use strict;
 use Carp;
+use UNIVERSAL::require;
 
 our $VERSION = '0.01';
 
@@ -11,15 +12,7 @@ use URI::QueryParam;
 use LWP::UserAgent;
 use JSON;
 
-use WebService::Bitly::Result::Shorten;
-use WebService::Bitly::Result::Validate;
 use WebService::Bitly::Result::HTTPError;
-use WebService::Bitly::Result::Expand;
-use WebService::Bitly::Result::Clicks;
-use WebService::Bitly::Result::BitlyProDomain;
-use WebService::Bitly::Result::Lookup;
-use WebService::Bitly::Result::Authenticate;
-use WebService::Bitly::Result::Info;
 
 use base qw(Class::Accessor::Fast);
 
@@ -38,23 +31,23 @@ __PACKAGE__->mk_accessors(qw(
 sub new {
     my ($class, %args) = @_;
     if (!defined $args{user_name} || !defined $args{user_api_key}) {
-        carp("user_name and user_api_key are both required parameters.\n");
+        croak("user_name and user_api_key are both required parameters.\n");
     }
 
-    $args{version} = $args{version} || 'v3';
+    $args{version} ||= 'v3';
     $args{ua} = LWP::UserAgent->new(
         env_proxy => 1,
         timeout   => 30,
     );
-    $args{base_url} = 'http://api.bit.ly/';
+    $args{base_url} ||= 'http://api.bit.ly/';
 
-    my $self = $class->SUPER::new({%args});
+    return $class->SUPER::new(\%args);
 }
 
 sub shorten {
     my ($self, $url) = @_;
     if (!defined $url) {
-        carp("url is required parameter.\n");
+        croak("url is required parameter.\n");
     }
 
     my $api_url = URI->new($self->base_url . $self->version . "/shorten");
@@ -66,17 +59,7 @@ sub shorten {
        $api_url->query_param(format   => 'json');
        $api_url->query_param(longUrl  => $url);
 
-    my $response = $self->ua->get($api_url);
-
-    if (!$response->is_success) {
-        return WebService::Bitly::Result::HTTPError->new({
-            status_code => $response->code,
-            status_txt  => $response->message,
-        });
-    }
-
-    my $bitly_response = from_json($response->{_content});
-    return WebService::Bitly::Result::Shorten->new($bitly_response);
+    $self->_do_request($api_url, 'Shorten');
 }
 
 sub expand {
@@ -84,7 +67,7 @@ sub expand {
     my $short_urls = $args{short_urls} || [];
     my $hashes     = $args{hashes} || [];
     if (!$short_urls && !$hashes) {
-        carp("either short_urls or hashes is required parameter.\n");
+        croak("either short_urls or hashes is required parameter.\n");
     }
 
     my $api_url = URI->new($self->base_url . $self->version . "/expand");
@@ -94,17 +77,7 @@ sub expand {
        $api_url->query_param(shortUrl => reverse(@$short_urls))   if $short_urls;
        $api_url->query_param(hash     => reverse(@$hashes))       if $hashes;
 
-    my $response = $self->ua->get($api_url);
-
-    if (!$response->is_success) {
-        return WebService::Bitly::Result::HTTPError->new({
-            status_code => $response->code,
-            status_txt  => $response->message,
-        });
-    }
-
-    my $bitly_response = from_json($response->{_content});
-    return WebService::Bitly::Result::Expand->new($bitly_response);
+    $self->_do_request($api_url, 'Expand');
 }
 
 sub validate {
@@ -117,24 +90,14 @@ sub validate {
        $api_url->query_param(x_login  => $self->end_user_name);
        $api_url->query_param(x_apiKey => $self->end_user_api_key);
 
-    my $response = $self->ua->get($api_url);
-
-    if (!$response->is_success) {
-        return WebService::Bitly::Result::HTTPError->new({
-            status_code => $response->code,
-            status_txt  => $response->message,
-        });
-    }
-
-    my $bitly_response = from_json($response->{_content});
-    return WebService::Bitly::Result::Validate->new($bitly_response);
+    $self->_do_request($api_url, 'Validate');
 }
 
 sub set_end_user_info {
     my ($self, $end_user_name, $end_user_api_key) = @_;
 
     if (!defined $end_user_name || !defined $end_user_api_key) {
-        carp("end_user_name and end_user_api_key are both required parameters.\n");
+        croak("end_user_name and end_user_api_key are both required parameters.\n");
     }
 
     $self->end_user_name($end_user_name);
@@ -148,7 +111,7 @@ sub clicks {
     my $short_urls   = $args{short_urls} || [];
     my $hashes       = $args{hashes} || [];
     if (!$short_urls && !$hashes) {
-        carp("either short_urls or hashes is required parameter.\n");
+        croak("either short_urls or hashes is required parameter.\n");
     }
 
     my $api_url = URI->new($self->base_url . $self->version . "/clicks");
@@ -158,23 +121,13 @@ sub clicks {
        $api_url->query_param(shortUrl => reverse(@$short_urls))   if $short_urls;
        $api_url->query_param(hash     => reverse(@$hashes))       if $hashes;
 
-    my $response = $self->ua->get($api_url);
-
-    if (!$response->is_success) {
-        return WebService::Bitly::Result::HTTPError->new({
-            status_code => $response->code,
-            status_txt  => $response->message,
-        });
-    }
-
-    my $bitly_response = from_json($response->{_content});
-    return WebService::Bitly::Result::Clicks->new($bitly_response);
+    $self->_do_request($api_url, 'Clicks');
 }
 
 sub bitly_pro_domain {
     my ($self, $domain) = @_;
     if (!$domain) {
-        carp("domain is required parameter.\n");
+        croak("domain is required parameter.\n");
     }
 
     my $api_url = URI->new($self->base_url . $self->version . "/bitly_pro_domain");
@@ -183,23 +136,13 @@ sub bitly_pro_domain {
        $api_url->query_param(apiKey   => $self->user_api_key);
        $api_url->query_param(domain   => $domain);
 
-    my $response = $self->ua->get($api_url);
-
-    if (!$response->is_success) {
-        return WebService::Bitly::Result::HTTPError->new({
-            status_code => $response->code,
-            status_txt  => $response->message,
-        });
-    }
-
-    my $bitly_response = from_json($response->{_content});
-    return WebService::Bitly::Result::BitlyProDomain->new($bitly_response);
+    $self->_do_request($api_url, 'BitlyProDomain');
 }
 
 sub lookup {
     my ($self, $urls) = @_;
     if (!$urls) {
-        carp("urls is required parameter.\n");
+        croak("urls is required parameter.\n");
     }
 
     my $api_url = URI->new($self->base_url . $self->version . "/lookup");
@@ -208,17 +151,7 @@ sub lookup {
        $api_url->query_param(format   => 'json');
        $api_url->query_param(url      => reverse(@$urls));
 
-    my $response = $self->ua->get($api_url);
-
-    if (!$response->is_success) {
-        return WebService::Bitly::Result::HTTPError->new({
-            status_code => $response->code,
-            status_txt  => $response->message,
-        });
-    }
-
-    my $bitly_response = from_json($response->{_content});
-    return WebService::Bitly::Result::Lookup->new($bitly_response);
+    $self->_do_request($api_url, 'Lookup');
 }
 
 sub authenticate {
@@ -250,7 +183,7 @@ sub info {
     my $short_urls   = $args{short_urls} || [];
     my $hashes       = $args{hashes} || [];
     if (!$short_urls && !$hashes) {
-        carp("either short_urls or hashes is required parameter.\n");
+        croak("either short_urls or hashes is required parameter.\n");
     }
 
     my $api_url = URI->new($self->base_url . $self->version . "/info");
@@ -260,7 +193,13 @@ sub info {
        $api_url->query_param(shortUrl => reverse(@$short_urls))   if $short_urls;
        $api_url->query_param(hash     => reverse(@$hashes))       if $hashes;
 
-    my $response = $self->ua->get($api_url);
+    $self->_do_request($api_url, 'Info');
+}
+
+sub _do_request {
+    my ($self, $url, $result_class) = @_;
+
+    my $response = $self->ua->get($url);
 
     if (!$response->is_success) {
         return WebService::Bitly::Result::HTTPError->new({
@@ -269,8 +208,11 @@ sub info {
         });
     }
 
+    $result_class = 'WebService::Bitly::Result::' . $result_class;
+    $result_class->require;
+
     my $bitly_response = from_json($response->{_content});
-    return WebService::Bitly::Result::Info->new($bitly_response);
+    return $result_class->new($bitly_response);
 }
 
 1;
