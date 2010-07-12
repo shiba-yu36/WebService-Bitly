@@ -162,10 +162,10 @@ sub test_027_lookup : Tests {
     ok my $result_shorten1 = $bitly->shorten('http://example1.com');
     ok my $result_shorten2 = $bitly->shorten('http://example2.com');
 
-    ok my $lookup = $bitly->lookup([
+    ok my $lookup = $bitly->lookup(
         'http://example1.com',
         'http://example2.com',
-    ]);
+    );
 
     isa_ok $lookup, 'WebService::Bitly::Result::Lookup', 'is correct object';
     ok !$lookup->is_error;

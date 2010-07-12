@@ -140,8 +140,8 @@ sub bitly_pro_domain {
 }
 
 sub lookup {
-    my ($self, $urls) = @_;
-    if (!$urls) {
+    my ($self, @urls) = @_;
+    if (!@urls) {
         croak("urls is required parameter.\n");
     }
 
@@ -149,7 +149,7 @@ sub lookup {
        $api_url->query_param(login    => $self->user_name);
        $api_url->query_param(apiKey   => $self->user_api_key);
        $api_url->query_param(format   => 'json');
-       $api_url->query_param(url      => reverse(@$urls));
+       $api_url->query_param(url      => reverse(@urls));
 
     $self->_do_request($api_url, 'Lookup');
 }
