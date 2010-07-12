@@ -48,12 +48,12 @@ sub test_021_shorten : Tests {
     my $args = $self->args;
 
     ok my $bitly = WebService::Bitly->new(%$args);
-    ok my $result_shorten = $bitly->shorten('http://example.com/');
-    
+    ok my $result_shorten = $bitly->shorten('http://code.google.com/p/bitly-api/wiki/ApiDocumentation');
+
     isa_ok $result_shorten, 'WebService::Bitly::Result::Shorten', 'is correct object';
     ok !$result_shorten->is_error, 'not http error';
     ok $result_shorten->short_url =~ m{^http://bit[.]ly/\w{6}}, 'can get correct short_url';
-    is $result_shorten->long_url, 'http://example.com/', 'can get correct long_url';
+    is $result_shorten->long_url, 'http://code.google.com/p/bitly-api/wiki/ApiDocumentation', 'can get correct long_url';
 }
 
 sub test_022_set_end_user_info : Tests {
@@ -95,8 +95,8 @@ sub test_024_expand : Tests {
     my $args = $self->args;
 
     ok my $bitly = WebService::Bitly->new(%$args);
-    ok my $result_shorten1 = $bitly->shorten('http://example1.com');
-    ok my $result_shorten2 = $bitly->shorten('http://example2.com');
+    ok my $result_shorten1 = $bitly->shorten('http://code.google.com/p/bitly-api/wiki/ApiDocumentation');
+    ok my $result_shorten2 = $bitly->shorten('http://www.google.co.jp/');
 
     ok my $result_expand = $bitly->expand(
         short_urls => [($result_shorten1->short_url, $result_shorten2->short_url)],
@@ -107,10 +107,10 @@ sub test_024_expand : Tests {
 
     my @expand_list = $result_expand->results;
 
-    is $expand_list[0]->long_url, 'http://example1.com';
-    is $expand_list[1]->long_url, 'http://example2.com';
-    is $expand_list[2]->long_url, 'http://example1.com';
-    is $expand_list[3]->long_url, 'http://example2.com';
+    is $expand_list[0]->long_url, 'http://code.google.com/p/bitly-api/wiki/ApiDocumentation';
+    is $expand_list[1]->long_url, 'http://www.google.co.jp/';
+    is $expand_list[2]->long_url, 'http://code.google.com/p/bitly-api/wiki/ApiDocumentation';
+    is $expand_list[3]->long_url, 'http://www.google.co.jp/';
 }
 
 sub test_025_clicks : Tests {
@@ -118,7 +118,7 @@ sub test_025_clicks : Tests {
     my $args = $self->args;
 
     ok my $bitly = WebService::Bitly->new(%$args);
-    ok my $result_shorten = $bitly->shorten('http://example1.com');
+    ok my $result_shorten = $bitly->shorten('http://code.google.com/p/bitly-api/wiki/ApiDocumentation');
 
     ok my $result_clicks = $bitly->clicks(
         short_urls => [$result_shorten->short_url, 'http://foobarbaz.jp/a35.akasa'],
@@ -131,15 +131,13 @@ sub test_025_clicks : Tests {
 
     ok !$clicks_list[0]->is_error, 'error should not  occur';
     is $clicks_list[0]->short_url, $result_shorten->short_url, 'should get correct short_url';
-    is $clicks_list[0]->user_clicks, 0, 'should get user clicks';
-    is $clicks_list[0]->global_clicks, 0, 'should get global clicks';
+    ok $clicks_list[0]->global_clicks, 'should get global clicks';
 
     ok $clicks_list[1]->is_error, 'error should occur';
 
     ok !$clicks_list[2]->is_error, 'error should not  occur';
     is $clicks_list[2]->hash, $result_shorten->hash, 'should get correct hash';
-    is $clicks_list[2]->user_clicks, 0, 'should get user clicks';
-    is $clicks_list[2]->global_clicks, 0, 'should get global clicks';
+    ok $clicks_list[2]->global_clicks, 'should get global clicks';
 
     ok $clicks_list[3]->is_error, 'error should occur';
 }
@@ -159,12 +157,12 @@ sub test_027_lookup : Tests {
     my $args = $self->args;
 
     ok my $bitly = WebService::Bitly->new(%$args);
-    ok my $result_shorten1 = $bitly->shorten('http://example1.com');
-    ok my $result_shorten2 = $bitly->shorten('http://example2.com');
+    ok my $result_shorten1 = $bitly->shorten('http://code.google.com/p/bitly-api/wiki/ApiDocumentation');
+    ok my $result_shorten2 = $bitly->shorten('http://www.google.co.jp/');
 
     ok my $lookup = $bitly->lookup(
-        'http://example1.com',
-        'http://example2.com',
+        'http://code.google.com/p/bitly-api/wiki/ApiDocumentation',
+        'http://www.google.co.jp/',
     );
 
     isa_ok $lookup, 'WebService::Bitly::Result::Lookup', 'is correct object';
