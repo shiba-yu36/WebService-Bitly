@@ -286,10 +286,10 @@ Optional parameter.  Specify 'j.mp', if you want to use j.mp domain in shorten m
 
 Get shorten result by long url.  you can make requests on behalf of another bit.ly user,  if you specify end_user_name and end_user_api_key in new or set_end_user_info method.
 
-    my $result_shorten = $bitly->shorten('http://example.com');
-    if (!$result_shorten->is_error) {
-        print $result_shorten->short_url;
-        print $result_shorten->hash;
+    my $shorten = $bitly->shorten('http://example.com');
+    if (!$shorten->is_error) {
+        print $shorten->short_url;
+        print $shorten->hash;
     }
 
 You can get data by following method of result object.
@@ -311,6 +311,37 @@ You can get data by following method of result object.
 =back
 
 =head2 expand(%param)
+
+Get long URL, given bit.ly URL or hash (or multiple).
+
+    my $expand = $bitly->expand(
+        short_urls => ['http://bit.ly/abcdef', 'http://bit.ly/fedcba'],
+        hashes     => ['123456', '654321'],
+    );
+    if (!$expand->is_error) {
+        for $result ($expand->results) {
+            print $result->long_url if !$result->is_error;
+        }
+    }
+
+You can get expand result list by $expand->results method.  Each result object has following method.
+
+=over 4
+
+=item short_url
+
+=item hash
+
+=item user_hash
+
+=item global_hash
+
+=item long_url
+
+=item is_error : return 1, if specified short_url or hash is not found.
+
+=back
+
 
 =head2 validate
 
