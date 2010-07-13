@@ -342,10 +342,20 @@ You can get expand result list by $expand->results method.  Each result object h
 
 =back
 
-
 =head2 validate
 
+Validate end-user name and end-user api key, which are specified by new or set_end_user_info method.
+
+    $bitly->set_end_user_info('end_user_name', 'end_user_api_key');
+    print $bitly->end_user_name;    # 'end_user_name'
+    print $bitly->end_user_api_key; # 'end_user_api_Key'
+    if ($bitly->validate->is_valid) {
+        ...
+    }
+
 =head2 set_end_user_info($end_user_name, $end_user_api_key)
+
+Set end-user name and end-user api key.
 
 =head2 clicks(%param)
 
