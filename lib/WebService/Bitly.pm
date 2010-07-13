@@ -220,14 +220,13 @@ sub _do_request {
 
 __END__;
 
-
 =head1 NAME
 
 WebService::Bitly - A Perl interface to the bit.ly API
 
 =head1 VERSION
 
-This document describes version 0.01 of WebService::Bitly, released *** .
+This document describes version 0.01 of WebService::Bitly.
 
 =head1 SYNOPSIS
 
@@ -239,9 +238,19 @@ This document describes version 0.01 of WebService::Bitly, released *** .
     );
 
     my $result_shorten = $bitly->shorten('http://example.com/');
-    if (!$result_shorten->is_error) {
+    if ($result_shorten->is_error) {
+        warn $result_shorten->status_code;
+        warn $result_shorten->status_txt;
+    }
+    else {
         my $short_url = $result_shorten->short_url;
     }
+
+=head1 DESCRIPTION
+
+WebService::Bitly provides an interface to the bit.ly API.
+
+Learning bit.ly API, see http://code.google.com/p/bitly-api/wiki/ApiDocumentation.
 
 =head1 METHODS
 
@@ -261,23 +270,23 @@ following parameters are taken.
 
 =over 4
 
-=item user_name
+=item * user_name
 
 Required parameter.  bit.ly user name.
 
-=item user_api_key
+=item * user_api_key
 
 Required parameter.  bit.ly user api key.
 
-=item end_user_name
+=item * end_user_name
 
 Optional parameter.  bit.ly end-user name.  This paramter used by shorten and validate method.
 
-=item end_user_api_key
+=item * end_user_api_key
 
 Optional parameter.  bit.ly end-user api key.  This paramter used by shorten and validate method.
 
-=item domain
+=item * domain
 
 Optional parameter.  Specify 'j.mp', if you want to use j.mp domain in shorten method.
 
@@ -297,17 +306,21 @@ You can get data by following method of result object.
 
 =over 4
 
-=item is_error : return 1, if request is failed.
+=item * is_error
 
-=item short_url : shortened url.
+return 1, if request is failed.
 
-=item is_new_hash : return 1, if specified url was shortened first time.
+=item * short_url
 
-=item hash
+=item * is_new_hash
 
-=item global_hash
+return 1, if specified url was shortened first time.
 
-=item long_url
+=item * hash
+
+=item * global_hash
+
+=item * long_url
 
 =back
 
@@ -329,17 +342,19 @@ You can get expand result list by $expand->results method.  Each result object h
 
 =over 4
 
-=item short_url
+=item * short_url
 
-=item hash
+=item * hash
 
-=item user_hash
+=item * user_hash
 
-=item global_hash
+=item * global_hash
 
-=item long_url
+=item * long_url
 
-=item is_error : return error message, if error occured.
+=item * is_error
+
+return error message, if error occured.
 
 =back
 
@@ -365,19 +380,19 @@ You can use this in much the same way as expand method.  Each result object has 
 
 =over 4
 
-=item short_url
+=item * short_url
 
-=item hash
+=item * hash
 
-=item user_hash
+=item * user_hash
 
-=item global_hash
+=item * global_hash
 
-=item user_clicks
+=item * user_clicks
 
-=item global_clicks
+=item * global_clicks
 
-=item is_error
+=item * is_error
 
 =back
 
@@ -407,32 +422,46 @@ Each result object has following method.
 
 =over 4
 
-=item global_hash
+=item * global_hash
 
-=item short_url
+=item * short_url
 
-=item url
+=item * url
 
-=item is_error : return error message, if error occured by this url.
+=item * is_error
+
+return error message, if error occured by this url.
+
+=back
 
 =head2 info(%param)
 
 Get detail page information by given bit.ly URL or hash (or multiple).
 You can use this in much the same way as expand method.  Each result object has following method.
 
-=item short_url
+=over 4
 
-=item hash
+=item * short_url
 
-=item user_hash
+=item * hash
 
-=item global_hash
+=item * user_hash
 
-=item title : page title.
+=item * global_hash
 
-=item created_by : the bit.ly username that originally shortened this link.
+=item * title
 
-=item is_error
+page title.
+
+=item * created_by
+
+the bit.ly username that originally shortened this link.
+
+=item * is_error
+
+return error message, if error occured by this url.
+
+=back
 
 =head2 authenticate($end_user_name, $end_user_password)
 
@@ -451,6 +480,12 @@ Lookup a bit.ly API key by given end-user name and end-user password.  However, 
 =item * bit.ly API Documentation
 
 http://code.google.com/p/bitly-api/wiki/ApiDocumentation
+
+=back
+
+=head1 REPOSITORY
+
+http://github.com/shiba-yu36/WebService-Bitly
 
 =head1 AUTHOR
 
