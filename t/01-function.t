@@ -25,7 +25,7 @@ sub api_input : Test(startup) {
     };
 }
 
-sub test_020_instance : Test(5) {
+sub test_010_instance : Test(8) {
     my $self = shift;
     my $args = $self->args;
     ok my $bitly = WebService::Bitly->new(
@@ -43,7 +43,7 @@ sub test_020_instance : Test(5) {
     is $bitly->version, 'v3', 'can get correct version';
 }
 
-sub test_021_shorten : Tests {
+sub test_011_shorten : Test(6) {
     my $self = shift;
     my $args = $self->args;
 
@@ -56,7 +56,7 @@ sub test_021_shorten : Tests {
     is $result_shorten->long_url, 'http://code.google.com/p/bitly-api/wiki/ApiDocumentation', 'can get correct long_url';
 }
 
-sub test_022_set_end_user_info : Tests {
+sub test_012_set_end_user_info : Test(4) {
     my $self = shift;
     my $args = $self->args;
 
@@ -69,7 +69,7 @@ sub test_022_set_end_user_info : Tests {
     is $bitly->end_user_api_key, $args->{end_user_api_key};
 }
 
-sub test_023_validate : Tests {
+sub test_013_validate : Test(9) {
     my $self = shift;
     my $args = $self->args;
 
@@ -91,7 +91,7 @@ sub test_023_validate : Tests {
     ok $bitly->validate->is_error, 'both parameter are empty';
 }
 
-sub test_024_expand : Tests {
+sub test_014_expand : Test(10) {
     my $self = shift;
     my $args = $self->args;
 
@@ -114,7 +114,7 @@ sub test_024_expand : Tests {
     is $expand_list[3]->long_url, 'http://www.google.co.jp/';
 }
 
-sub test_025_clicks : Tests {
+sub test_015_clicks : Test(13) {
     my $self = shift;
     my $args = $self->args;
 
@@ -143,7 +143,7 @@ sub test_025_clicks : Tests {
     ok $clicks_list[3]->is_error, 'error should occur';
 }
 
-sub test_026_bitly_pro_domain : Tests {
+sub test_016_bitly_pro_domain : Tests {
     my $self = shift;
     my $args = $self->args;
 
@@ -153,7 +153,7 @@ sub test_026_bitly_pro_domain : Tests {
     is $bitly->bitly_pro_domain('bit.ly')->is_pro_domain, 0, 'should not pro domain';
 }
 
-sub test_027_lookup : Tests {
+sub test_017_lookup : Test(10) {
     my $self = shift;
     my $args = $self->args;
 
@@ -177,7 +177,7 @@ sub test_027_lookup : Tests {
     is $lookup[1]->short_url, 'http://bit.ly/'.$result_shorten2->global_hash, 'should get correct short url';
 }
 
-sub test_028_authenticate : Tests {
+sub test_018_authenticate : Test(9) {
     my $self = shift;
     my $args = $self->args;
     return("this test cannot succeeded, unless user allow authenticate access.");
@@ -195,7 +195,7 @@ sub test_028_authenticate : Tests {
     ok !$authenticate->is_success, 'authenticate should not be success';
 }
 
-sub test_029_info : Tests {
+sub test_019_info : Test(15) {
     my $self = shift;
     my $args = $self->args;
 
@@ -226,16 +226,18 @@ sub test_029_info : Tests {
     ok $info_list[3]->is_error;
 }
 
-sub test_030_http_error : Tests {
+sub test_020_http_error : Test(4) {
     my $self = shift;
     my $args = $self->args;
 
     ok my $bitly = WebService::Bitly->new(
         %$args,
-        base_url => 'aaa',
     );
-    #fail shorten
-    ok $bitly = WebService::Bitly->new(%$args);
+    $bitly->{base_url} = 'aaa';
+
+    my $shorten = $bitly->shorten('http://www.google.co.jp/');
+    isa_ok $shorten, 'WebService::Bitly::Result::HTTPError', 'is correct object';
+    ok $shorten->is_error, 'error should occur';
 }
 
 __PACKAGE__->runtests;
