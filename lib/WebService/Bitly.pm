@@ -222,79 +222,103 @@ __END__;
 
 =head1 NAME
 
-WebService::Bitly - The great new WebService::Bitly!
+WebService::Bitly - A Perl interface to the bit.ly API
 
 =head1 VERSION
 
+This document describes version 0.01 of WebService::Bitly, released *** .
+
 =head1 SYNOPSIS
-
-Quick summary of what the module does.
-
-Perhaps a little code snippet.
 
     use WebService::Bitly;
 
-    my $foo = WebService::Bitly->new();
-    ...
+    my $bitly = WebService::Bitly->new(
+        user_name => 'shibayu',
+        user_api_key => 'R_1234567890abcdefg',
+    );
 
-=head1 EXPORT
+    my $result_shorten = $bitly->shorten('http://example.com/');
+    if (!$result_shorten->is_error) {
+        my $short_url = $result_shorten->short_url;
+    }
 
-A list of functions that can be exported.  You can delete this section
-if you don't export anything, such as for a purely object-oriented module.
+=head1 METHODS
 
-=head1 SUBROUTINES/METHODS
+=head2 new(%param)
 
-=head2 function1
+Create a new WebService::Bitly object with hash parameter.
 
-=head2 function2
+    my $bitly = WebService::Bitly->new(
+        user_name        => 'shibayu36',
+        user_api_key     => 'R_1234567890abcdefg',
+        end_user_name    => 'bitly_end_user',
+        end_user_api_key => 'R_abcdefg123456789',
+        domain           => 'j.mp',
+    );
+
+following parameters are taken.
+
+=over 4
+
+=item * user_name
+Required parameter.  bit.ly user name.
+
+=item * user_api_key
+Required parameter.  bit.ly user api key.
+
+=item * end_user_name
+Optional parameter.  bit.ly end-user name.  This paramter used by shorten and validate method.
+
+=item * end_user_api_key
+Optional parameter.  bit.ly end-user api key.  This paramter used by shorten and validate method.
+
+=item * domain
+Optional parameter.  Specify 'j.mp', if you want to use j.mp domain in shorten method.
+
+=back
+
+
+=head2 shorten($url)
+
+Get shorten result by long url.
+
+    my $result_shorten = $bitly->shorten('http://example.com');
+    if (!$result_shorten->is_error) {
+        print $result_shorten->short_url;
+        print $result_shorten->hash;
+    }
+
+You can get data by following method of result object.
+
+=over 4
+
+=item
+
+=back
+
+=head2 expand(%param)
+
+=head2 validate
+
+=head2 set_end_user_info($end_user_name, $end_user_api_key)
+
+=head2 clicks(%param)
+
+=head2 bitly_pro_domain($domain)
+
+=head2 lookup(@urls)
+
+=head2 info(%param)
+
+=head2 authenticate($end_user_name, $end_user_password)
+
+=head1 SEE ALSO
 
 =head1 AUTHOR
 
 Yuki Shibazaki, C<< <shiba1029196473 at gmail.com> >>
 
-=head1 BUGS
-
-Please report any bugs or feature requests to C<bug-webservice-bitly at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=WebService-Bitly>;.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
-
-
-
-
-=head1 SUPPORT
-
-You can find documentation for this module with the perldoc command.
-
-    perldoc WebService::Bitly
-
-
-You can also look for information at:
-
-=over 4
-
-=item * RT: CPAN's request tracker
-
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=WebService-Bitly>;
-
-=item * AnnoCPAN: Annotated CPAN documentation
-
-L<http://annocpan.org/dist/WebService-Bitly>;
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/WebService-Bitly>;
-
-=item * Search CPAN
-
-L<http://search.cpan.org/dist/WebService-Bitly/>;
-
-=back
-
-
-=head1 ACKNOWLEDGEMENTS
-
-
-=head1 LICENSE AND COPYRIGHT
+=head1 COPYRIGHT AND LICENSE
 
 Copyright 2010 Yuki Shibazaki.
 
