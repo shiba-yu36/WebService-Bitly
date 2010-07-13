@@ -13,6 +13,7 @@ use LWP::UserAgent;
 use JSON;
 
 use WebService::Bitly::Result::HTTPError;
+use WebService::Bitly::Result::Authenticate;
 
 use base qw(Class::Accessor::Fast);
 
@@ -140,8 +141,8 @@ sub bitly_pro_domain {
 }
 
 sub lookup {
-    my ($self, @urls) = @_;
-    if (!@urls) {
+    my ($self, $urls) = @_;
+    if (!$urls) {
         croak("urls is required parameter.\n");
     }
 
@@ -149,7 +150,7 @@ sub lookup {
        $api_url->query_param(login    => $self->user_name);
        $api_url->query_param(apiKey   => $self->user_api_key);
        $api_url->query_param(format   => 'json');
-       $api_url->query_param(url      => reverse(@urls));
+       $api_url->query_param(url      => reverse(@$urls));
 
     $self->_do_request($api_url, 'Lookup');
 }
@@ -338,7 +339,7 @@ You can get expand result list by $expand->results method.  Each result object h
 
 =item long_url
 
-=item is_error : return 1, if specified short_url or hash is not found.
+=item is_error : return error message, if error occured.
 
 =back
 
@@ -346,9 +347,9 @@ You can get expand result list by $expand->results method.  Each result object h
 
 Validate end-user name and end-user api key, which are specified by new or set_end_user_info method.
 
-    $bitly->set_end_user_info('end_user_name', 'end_user_api_key');
-    print $bitly->end_user_name;    # 'end_user_name'
-    print $bitly->end_user_api_key; # 'end_user_api_Key'
+    $bitly->set_end_user_info('end_user', 'R_1234567890123456');
+    print $bitly->end_user_name;    # 'end_user'
+    print $bitly->end_user_api_key; # 'R_1234567890123456'
     if ($bitly->validate->is_valid) {
         ...
     }
@@ -359,15 +360,97 @@ Set end-user name and end-user api key.
 
 =head2 clicks(%param)
 
+Get the statistics about the clicks, given bit.ly URL or hash (or multiple).
+You can use this in much the same way as expand method.  Each result object has following method.
+
+=over 4
+
+=item short_url
+
+=item hash
+
+=item user_hash
+
+=item global_hash
+
+=item user_clicks
+
+=item global_clicks
+
+=item is_error
+
+=back
+
 =head2 bitly_pro_domain($domain)
 
-=head2 lookup(@urls)
+Check whether a given short domain is assigned for bitly.Pro.
+
+    my $result = $bitly->bitly_pro_domain('nyti.ms');
+    if ($result->is_pro_domain) {
+        ...
+    }
+
+=head2 lookup([@urls])
+Get shortened url information by given urls.
+
+    my $lookup = $bitly->lookup([
+        'http://code.google.com/p/bitly-api/wiki/ApiDocumentation',
+        'http://betaworks.com/',
+    ]);
+    if (!$lookup->is_error) {
+        for my $result ($lookup->results) {
+            print $result->short_url;
+        }
+    }
+
+Each result object has following method.
+
+=over 4
+
+=item global_hash
+
+=item short_url
+
+=item url
+
+=item is_error : return error message, if error occured by this url.
 
 =head2 info(%param)
 
+Get detail page information by given bit.ly URL or hash (or multiple).
+You can use this in much the same way as expand method.  Each result object has following method.
+
+=item short_url
+
+=item hash
+
+=item user_hash
+
+=item global_hash
+
+=item title : page title.
+
+=item created_by : the bit.ly username that originally shortened this link.
+
+=item is_error
+
 =head2 authenticate($end_user_name, $end_user_password)
 
+Lookup a bit.ly API key by given end-user name and end-user password.  However, this method is restricted.  See bit.ly api documentation, learning more.
+
+    my $result = $bitly->authenticate('bitlyapidemo', 'good-password');
+    if ($result->is_success) {
+        print $result->user_name;
+        print $result->api_key;
+    }
+
 =head1 SEE ALSO
+
+=over 4
+
+=item * bit.ly API Documentation
+
+http://code.google.com/p/bitly-api/wiki/ApiDocumentation
 
 =head1 AUTHOR
 
@@ -377,8 +460,4 @@ Yuki Shibazaki, C<< <shiba1029196473 at gmail.com> >>
 
 Copyright 2010 Yuki Shibazaki.
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of either: the GNU General Public License as published
-by the Free Software Foundation; or the Artistic License.
-
-See http://dev.perl.org/licenses/ for more information.
+WebService::Bitly is free software; you may redistribute it and/or modify it under the same terms as Perl itself.

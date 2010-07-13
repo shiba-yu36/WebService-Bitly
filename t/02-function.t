@@ -161,10 +161,10 @@ sub test_027_lookup : Tests {
     ok my $result_shorten1 = $bitly->shorten('http://code.google.com/p/bitly-api/wiki/ApiDocumentation');
     ok my $result_shorten2 = $bitly->shorten('http://www.google.co.jp/');
 
-    ok my $lookup = $bitly->lookup(
+    ok my $lookup = $bitly->lookup([
         'http://code.google.com/p/bitly-api/wiki/ApiDocumentation',
         'http://www.google.co.jp/',
-    );
+    ]);
 
     isa_ok $lookup, 'WebService::Bitly::Result::Lookup', 'is correct object';
     ok !$lookup->is_error;
@@ -183,17 +183,16 @@ sub test_028_authenticate : Tests {
     return("this test cannot succeeded, unless user allow authenticate access.");
 
     ok my $bitly = WebService::Bitly->new(%$args);
-    ok my $authenticate = $bitly->authenticate($args->{end_user_name}, $self->{password});
+    ok my $authenticate = $bitly->authenticate('bitlyapidemo', 'good-password');
 
     ok !$authenticate->is_error, 'error should not occur';
     ok $authenticate->is_success, 'authenticate should be success';
     is $authenticate->user_name, $args->{end_user_name}, 'user name should be correct';
     is $authenticate->api_key, $args->{end_user_api_key}, 'user api key should be correct';
 
-    $bitly->set_end_user_info('error', 'error_api_key');
-    ok $authenticate = $bitly->authenticate($args->{end_user_name}, $self->{password});
+    ok $authenticate = $bitly->authenticate('bitlyapidemo', 'bad-password');
     ok !$authenticate->is_error, 'error should not occur';
-    ok !$authenticate->is_success, 'authenticate should not be success'
+    ok !$authenticate->is_success, 'authenticate should not be success';
 }
 
 sub test_029_info : Tests {
@@ -215,12 +214,14 @@ sub test_029_info : Tests {
     ok !$info_list[0]->is_error, 'error should not occur';
     is $info_list[0]->title, 'Google', 'should get correct title';
     is $info_list[0]->user_hash, $result_shorten->hash, 'should get correct short url';
+    ok $info_list[0]->created_by, 'should get created_by';
 
     ok $info_list[1]->is_error;
 
     ok !$info_list[2]->is_error, 'error should not occur';
     is $info_list[2]->title, 'Google', 'should get correct title';
     is $info_list[2]->short_url, $result_shorten->short_url, 'should get correct hash';
+    ok $info_list[2]->created_by, 'should get created_by';
 
     ok $info_list[3]->is_error;
 }

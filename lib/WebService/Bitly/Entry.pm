@@ -21,6 +21,7 @@ __PACKAGE__->mk_accessors(qw(
     url
 
     title
+    created_by
 ));
 
 sub new {
