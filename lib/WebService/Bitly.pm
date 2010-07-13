@@ -260,27 +260,31 @@ following parameters are taken.
 
 =over 4
 
-=item * user_name
+=item user_name
+
 Required parameter.  bit.ly user name.
 
-=item * user_api_key
+=item user_api_key
+
 Required parameter.  bit.ly user api key.
 
-=item * end_user_name
+=item end_user_name
+
 Optional parameter.  bit.ly end-user name.  This paramter used by shorten and validate method.
 
-=item * end_user_api_key
+=item end_user_api_key
+
 Optional parameter.  bit.ly end-user api key.  This paramter used by shorten and validate method.
 
-=item * domain
+=item domain
+
 Optional parameter.  Specify 'j.mp', if you want to use j.mp domain in shorten method.
 
 =back
 
-
 =head2 shorten($url)
 
-Get shorten result by long url.
+Get shorten result by long url.  you can make requests on behalf of another bit.ly user,  if you specify end_user_name and end_user_api_key in new or set_end_user_info method.
 
     my $result_shorten = $bitly->shorten('http://example.com');
     if (!$result_shorten->is_error) {
@@ -292,7 +296,17 @@ You can get data by following method of result object.
 
 =over 4
 
-=item
+=item is_error : return 1, if request is failed.
+
+=item short_url : shortened url.
+
+=item is_new_hash : return 1, if specified url was shortened first time.
+
+=item hash
+
+=item global_hash
+
+=item long_url
 
 =back
 

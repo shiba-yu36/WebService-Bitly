@@ -75,6 +75,7 @@ sub test_023_validate : Tests {
 
     ok my $bitly = WebService::Bitly->new(%$args);
     ok my $validate_result = $bitly->validate;
+    isa_ok $validate_result, 'WebService::Bitly::Result::Validate', 'is correct object';
     ok $validate_result->is_valid;
 
     ok $bitly->set_end_user_info('test', 'test'), 'both parameter are invalid';
