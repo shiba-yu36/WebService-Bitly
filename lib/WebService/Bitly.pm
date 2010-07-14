@@ -237,20 +237,20 @@ This document describes version 0.01 of WebService::Bitly.
         user_api_key => 'R_1234567890abcdefg',
     );
 
-    my $result_shorten = $bitly->shorten('http://example.com/');
-    if ($result_shorten->is_error) {
-        warn $result_shorten->status_code;
-        warn $result_shorten->status_txt;
+    my $shorten = $bitly->shorten('http://example.com/');
+    if ($shorten->is_error) {
+        warn $shorten->status_code;
+        warn $shorten->status_txt;
     }
     else {
-        my $short_url = $result_shorten->short_url;
+        my $short_url = $shorten->short_url;
     }
 
 =head1 DESCRIPTION
 
 WebService::Bitly provides an interface to the bit.ly API.
 
-Learning bit.ly API, see http://code.google.com/p/bitly-api/wiki/ApiDocumentation.
+To get information about bit.ly API, see http://code.google.com/p/bitly-api/wiki/ApiDocumentation.
 
 =head1 METHODS
 
@@ -266,7 +266,7 @@ Create a new WebService::Bitly object with hash parameter.
         domain           => 'j.mp',
     );
 
-following parameters are taken.
+Set up initial state by following parameters.
 
 =over 4
 
@@ -280,11 +280,11 @@ Required parameter.  bit.ly user api key.
 
 =item * end_user_name
 
-Optional parameter.  bit.ly end-user name.  This paramter used by shorten and validate method.
+Optional parameter.  bit.ly end-user name.  This parameter is used by shorten and validate method.
 
 =item * end_user_api_key
 
-Optional parameter.  bit.ly end-user api key.  This paramter used by shorten and validate method.
+Optional parameter.  bit.ly end-user api key.  This parameter is used by shorten and validate method.
 
 =item * domain
 
@@ -326,7 +326,7 @@ return 1, if specified url was shortened first time.
 
 =head2 expand(%param)
 
-Get long URL, given bit.ly URL or hash (or multiple).
+Get long URL by given bit.ly URL or hash (or multiple).
 
     my $expand = $bitly->expand(
         short_urls => ['http://bit.ly/abcdef', 'http://bit.ly/fedcba'],
