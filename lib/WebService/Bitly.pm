@@ -294,7 +294,8 @@ Optional parameter.  Specify 'j.mp', if you want to use j.mp domain in shorten m
 
 =head2 shorten($url)
 
-Get shorten result by long url.  you can make requests on behalf of another bit.ly user,  if you specify end_user_name and end_user_api_key in new or set_end_user_info method.
+Get shorten result from long url.
+you can make requests on behalf of another bit.ly user,  if you specify end_user_name and end_user_api_key in new or set_end_user_info method.
 
     my $shorten = $bitly->shorten('http://example.com');
     if (!$shorten->is_error) {
@@ -326,7 +327,7 @@ return 1, if specified url was shortened first time.
 
 =head2 expand(%param)
 
-Get long URL by given bit.ly URL or hash (or multiple).
+Get long URL from given bit.ly URL or hash (or multiple).
 
     my $expand = $bitly->expand(
         short_urls => ['http://bit.ly/abcdef', 'http://bit.ly/fedcba'],
@@ -354,13 +355,13 @@ You can get expand result list by $expand->results method.  Each result object h
 
 =item * is_error
 
-return error message, if error occured.
+return error message, if error occured by the url.
 
 =back
 
 =head2 validate
 
-Validate end-user name and end-user api key, which are specified by new or set_end_user_info method.
+Validate end-user name and end-user api key, which are set by new or set_end_user_info method.
 
     $bitly->set_end_user_info('end_user', 'R_1234567890123456');
     print $bitly->end_user_name;    # 'end_user'
@@ -375,7 +376,7 @@ Set end-user name and end-user api key.
 
 =head2 clicks(%param)
 
-Get the statistics about the clicks, given bit.ly URL or hash (or multiple).
+Get statistics about the clicks from given bit.ly URL or hash (or multiple).
 You can use this in much the same way as expand method.  Each result object has following method.
 
 =over 4
@@ -406,7 +407,7 @@ Check whether a given short domain is assigned for bitly.Pro.
     }
 
 =head2 lookup([@urls])
-Get shortened url information by given urls.
+Get shortened url information from given urls.
 
     my $lookup = $bitly->lookup([
         'http://code.google.com/p/bitly-api/wiki/ApiDocumentation',
@@ -430,13 +431,13 @@ Each result object has following method.
 
 =item * is_error
 
-return error message, if error occured by this url.
+return error message, if error occured by the url.
 
 =back
 
 =head2 info(%param)
 
-Get detail page information by given bit.ly URL or hash (or multiple).
+Get detail page information from given bit.ly URL or hash (or multiple).
 You can use this in much the same way as expand method.  Each result object has following method.
 
 =over 4
@@ -459,13 +460,13 @@ the bit.ly username that originally shortened this link.
 
 =item * is_error
 
-return error message, if error occured by this url.
+return error message, if error occured by the url.
 
 =back
 
 =head2 authenticate($end_user_name, $end_user_password)
 
-Lookup a bit.ly API key by given end-user name and end-user password.  However, this method is restricted.  See bit.ly api documentation, learning more.
+Lookup a bit.ly API key by given end-user name and end-user password.  However, this method is only available to allowed bit.ly user.  To get more information, see bit.ly api documentation.
 
     my $result = $bitly->authenticate('bitlyapidemo', 'good-password');
     if ($result->is_success) {
