@@ -250,7 +250,7 @@ This document describes version 0.01 of WebService::Bitly.
 
 WebService::Bitly provides an interface to the bit.ly API.
 
-WWW::Shorten::Bitly is similar module as this,  but WWW::Shorten::Bitly only supports shorten and expand API.  WebService::Bitly supports all.
+this module is similar as WWW::Shorten::Bitly, but WWW::Shorten::Bitly only supports shorten and expand API.  WebService::Bitly supports all.
 
 To get information about bit.ly API, see http://code.google.com/p/bitly-api/wiki/ApiDocumentation.
 
