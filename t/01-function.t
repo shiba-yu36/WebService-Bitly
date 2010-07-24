@@ -14,8 +14,8 @@ sub api_input : Test(startup) {
     my $self = shift;
 
     #APIキーやusernameの入力
-    my $user_name        = prompt 'input bit.ly test user name: ';
-    my $user_api_key     = prompt 'input bit.ly test user api key:';
+    my $user_name        = prompt 'input bit.ly test user name: ', -d => '', -raw;
+    my $user_api_key     = prompt 'input bit.ly test user api key:', -d => '', -raw;
 
     $self->{args} = {
         user_name         => $user_name,
@@ -28,6 +28,11 @@ sub api_input : Test(startup) {
 sub test_010_instance : Test(8) {
     my $self = shift;
     my $args = $self->args;
+
+    if (!$args->{user_name} && !$args->{user_api_key}) {
+        return 'user name and api key are both required';
+    }
+
     ok my $bitly = WebService::Bitly->new(
         %$args,
         domain  => 'j.mp',
@@ -47,6 +52,10 @@ sub test_011_shorten : Test(6) {
     my $self = shift;
     my $args = $self->args;
 
+    if (!$args->{user_name} && !$args->{user_api_key}) {
+        return 'user name and api key are both required';
+    }
+
     ok my $bitly = WebService::Bitly->new(%$args);
     ok my $result_shorten = $bitly->shorten('http://code.google.com/p/bitly-api/wiki/ApiDocumentation');
 
@@ -60,6 +69,10 @@ sub test_012_set_end_user_info : Test(4) {
     my $self = shift;
     my $args = $self->args;
 
+    if (!$args->{user_name} && !$args->{user_api_key}) {
+        return 'user name and api key are both required';
+    }
+
     ok my $bitly = WebService::Bitly->new(
         user_name => $args->{user_name},
         user_api_key => $args->{user_api_key},
@@ -72,6 +85,10 @@ sub test_012_set_end_user_info : Test(4) {
 sub test_013_validate : Test(9) {
     my $self = shift;
     my $args = $self->args;
+
+    if (!$args->{user_name} && !$args->{user_api_key}) {
+        return 'user name and api key are both required';
+    }
 
     ok my $bitly = WebService::Bitly->new(%$args);
     ok my $validate_result = $bitly->validate;
@@ -95,6 +112,10 @@ sub test_014_expand : Test(10) {
     my $self = shift;
     my $args = $self->args;
 
+    if (!$args->{user_name} && !$args->{user_api_key}) {
+        return 'user name and api key are both required';
+    }
+
     ok my $bitly = WebService::Bitly->new(%$args);
     ok my $result_shorten1 = $bitly->shorten('http://code.google.com/p/bitly-api/wiki/ApiDocumentation');
     ok my $result_shorten2 = $bitly->shorten('http://www.google.co.jp/');
@@ -117,6 +138,10 @@ sub test_014_expand : Test(10) {
 sub test_015_clicks : Test(13) {
     my $self = shift;
     my $args = $self->args;
+
+    if (!$args->{user_name} && !$args->{user_api_key}) {
+        return 'user name and api key are both required';
+    }
 
     ok my $bitly = WebService::Bitly->new(%$args);
     ok my $result_shorten = $bitly->shorten('http://code.google.com/p/bitly-api/wiki/ApiDocumentation');
@@ -147,6 +172,10 @@ sub test_016_bitly_pro_domain : Tests {
     my $self = shift;
     my $args = $self->args;
 
+    if (!$args->{user_name} && !$args->{user_api_key}) {
+        return 'user name and api key are both required';
+    }
+
     ok my $bitly = WebService::Bitly->new(%$args);
 
     is $bitly->bitly_pro_domain('nyti.ms')->is_pro_domain, 1, 'should pro doman';
@@ -156,6 +185,10 @@ sub test_016_bitly_pro_domain : Tests {
 sub test_017_lookup : Test(10) {
     my $self = shift;
     my $args = $self->args;
+
+    if (!$args->{user_name} && !$args->{user_api_key}) {
+        return 'user name and api key are both required';
+    }
 
     ok my $bitly = WebService::Bitly->new(%$args);
     ok my $result_shorten1 = $bitly->shorten('http://code.google.com/p/bitly-api/wiki/ApiDocumentation');
@@ -199,6 +232,10 @@ sub test_019_info : Test(15) {
     my $self = shift;
     my $args = $self->args;
 
+    if (!$args->{user_name} && !$args->{user_api_key}) {
+        return 'user name and api key are both required';
+    }
+
     ok my $bitly = WebService::Bitly->new(%$args);
     ok my $result_shorten = $bitly->shorten('http://www.google.co.jp/');
 
@@ -229,6 +266,10 @@ sub test_019_info : Test(15) {
 sub test_020_http_error : Test(4) {
     my $self = shift;
     my $args = $self->args;
+
+    if (!$args->{user_name} && !$args->{user_api_key}) {
+        return 'user name and api key are both required';
+    }
 
     ok my $bitly = WebService::Bitly->new(
         %$args,
