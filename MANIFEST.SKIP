@@ -14,3 +14,4 @@ WebService-Bitly-
 \.shipit.*
 ^\.#
 ^\.prove
+^\.gitignore$
