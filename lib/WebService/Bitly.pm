@@ -175,7 +175,7 @@ sub authenticate {
         });
     }
 
-    my $bitly_response = from_json($response->{_content});
+    my $bitly_response = from_json($response->content);
     return WebService::Bitly::Result::Autenticate->new($bitly_response);
 }
 
@@ -212,7 +212,7 @@ sub _do_request {
     $result_class = 'WebService::Bitly::Result::' . $result_class;
     $result_class->require;
 
-    my $bitly_response = from_json($response->{_content});
+    my $bitly_response = from_json($response->content);
     return $result_class->new($bitly_response);
 }
 
