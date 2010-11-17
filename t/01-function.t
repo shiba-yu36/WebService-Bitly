@@ -86,8 +86,6 @@ sub test_013_validate : Test(9) {
     my $self = shift;
     my $args = $self->args;
 
-    return q{bit.ly validate api doesn't work now};
-
     if (!$args->{user_name} && !$args->{user_api_key}) {
         return 'user name and api key are both required';
     }
