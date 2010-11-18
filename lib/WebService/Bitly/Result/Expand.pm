@@ -4,19 +4,16 @@ use warnings;
 use strict;
 use Carp;
 
-use WebService::Bitly::Entry;
-
 use base qw(WebService::Bitly::Result);
+
+use WebService::Bitly::Util;
 
 sub new {
     my ($class, $result_expand) = @_;
     my $self = $class->SUPER::new($result_expand);
-    my $results;
 
-    for my $expand (@{$self->data->{expand}}) {
-        push @$results, WebService::Bitly::Entry->new($expand);
-    }
-    $self->{results} = $results;
+    $self->{results}
+        = WebService::Bitly::Util->make_entries($self->data->{expand});
 
     return $self;
 }
