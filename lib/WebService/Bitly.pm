@@ -492,7 +492,7 @@ http://github.com/shiba-yu36/WebService-Bitly
 
 =head1 AUTHOR
 
-Yuki Shibazaki, C<< <shiba1029196473 at gmail.com> >>
+Yuki Shibazaki, C<< <shibayu36 at gmail.com> >>
 
 =head1 COPYRIGHT AND LICENSE
 
