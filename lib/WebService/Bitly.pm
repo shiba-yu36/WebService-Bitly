@@ -331,6 +331,20 @@ return 1, if specified url was shortened first time.
 
 Get long URL from given bit.ly URL or hash (or multiple).
 
+=head3 parameters
+
+=over 4
+
+=item short_urls
+
+bit.ly short url arrayref
+
+=item hashes
+
+bit.ly hash arrayref
+
+=back
+
     my $expand = $bitly->expand(
         short_urls => ['http://bit.ly/abcdef', 'http://bit.ly/fedcba'],
         hashes     => ['123456', '654321'],
@@ -399,6 +413,53 @@ You can use this in much the same way as expand method.  Each result object has 
 
 =back
 
+=head2 referrers(%param)
+
+Get a list of referring sites for a specified url or hash.
+
+=head3 parameters
+
+Specify either short_url or hashes.
+
+=over 4
+
+=item short_url
+
+bit.ly short url
+
+=item hash
+
+bit.ly hash
+
+=back
+
+You can get data by following method of result object.
+
+=over 4
+
+=item * is_error
+
+=item * created_by
+
+=item * global_hash
+
+=item * short_url
+
+=item * user_hash
+
+=item * referrers
+
+arrayref of referrer information object.  you can use accessor method such as clicks, referrer, referrer_app, url.
+
+=back
+
+   my $result = $bitly->referrers(short_url => 'http://bit.ly/abcdef');
+   print $result->short_url;
+   for my $referrer (@{$result->refferers}) {
+       printf '%s : %s', $referrer->referrer, $referrer->clicks;
+   }
+
+
 =head2 bitly_pro_domain($domain)
 
 Check whether a given short domain is assigned for bitly.Pro.
@@ -409,6 +470,7 @@ Check whether a given short domain is assigned for bitly.Pro.
     }
 
 =head2 lookup([@urls])
+
 Get shortened url information from given urls.
 
     my $lookup = $bitly->lookup([
