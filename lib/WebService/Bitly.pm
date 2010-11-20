@@ -51,13 +51,10 @@ sub shorten {
         croak("url is required parameter.\n");
     }
 
-    my $api_url = URI->new($self->base_url . $self->version . "/shorten");
-       $api_url->query_param(login    => $self->user_name);
-       $api_url->query_param(apiKey   => $self->user_api_key);
+    my $api_url = $self->_api_url("shorten");
        $api_url->query_param(x_login  => $self->end_user_name)    if $self->end_user_name;
        $api_url->query_param(x_apiKey => $self->end_user_api_key) if $self->end_user_api_key;
        $api_url->query_param(domain   => $self->domain)           if $self->domain;
-       $api_url->query_param(format   => 'json');
        $api_url->query_param(longUrl  => $url);
 
     $self->_do_request($api_url, 'Shorten');
@@ -71,10 +68,7 @@ sub expand {
         croak("either short_urls or hashes is required parameter.\n");
     }
 
-    my $api_url = URI->new($self->base_url . $self->version . "/expand");
-       $api_url->query_param(login    => $self->user_name);
-       $api_url->query_param(apiKey   => $self->user_api_key);
-       $api_url->query_param(format   => 'json');
+    my $api_url = $self->_api_url("expand");
        $api_url->query_param(shortUrl => reverse(@$short_urls))   if $short_urls;
        $api_url->query_param(hash     => reverse(@$hashes))       if $hashes;
 
@@ -84,10 +78,7 @@ sub expand {
 sub validate {
     my ($self) = @_;
 
-    my $api_url = URI->new($self->base_url . $self->version . "/validate");
-       $api_url->query_param(format   => 'json');
-       $api_url->query_param(login    => $self->user_name);
-       $api_url->query_param(apiKey   => $self->user_api_key);
+    my $api_url = $self->_api_url("validate");
        $api_url->query_param(x_login  => $self->end_user_name);
        $api_url->query_param(x_apiKey => $self->end_user_api_key);
 
@@ -115,10 +106,7 @@ sub clicks {
         croak("either short_urls or hashes is required parameter.\n");
     }
 
-    my $api_url = URI->new($self->base_url . $self->version . "/clicks");
-       $api_url->query_param(login    => $self->user_name);
-       $api_url->query_param(apiKey   => $self->user_api_key);
-       $api_url->query_param(format   => 'json');
+    my $api_url = $self->_api_url("clicks");
        $api_url->query_param(shortUrl => reverse(@$short_urls))   if $short_urls;
        $api_url->query_param(hash     => reverse(@$hashes))       if $hashes;
 
@@ -131,10 +119,7 @@ sub bitly_pro_domain {
         croak("domain is required parameter.\n");
     }
 
-    my $api_url = URI->new($self->base_url . $self->version . "/bitly_pro_domain");
-       $api_url->query_param(format   => 'json');
-       $api_url->query_param(login    => $self->user_name);
-       $api_url->query_param(apiKey   => $self->user_api_key);
+    my $api_url = $self->_api_url("bitly_pro_domain");
        $api_url->query_param(domain   => $domain);
 
     $self->_do_request($api_url, 'BitlyProDomain');
@@ -146,10 +131,7 @@ sub lookup {
         croak("urls is required parameter.\n");
     }
 
-    my $api_url = URI->new($self->base_url . $self->version . "/lookup");
-       $api_url->query_param(login    => $self->user_name);
-       $api_url->query_param(apiKey   => $self->user_api_key);
-       $api_url->query_param(format   => 'json');
+    my $api_url = $self->_api_url("lookup");
        $api_url->query_param(url      => reverse(@$urls));
 
     $self->_do_request($api_url, 'Lookup');
@@ -158,7 +140,7 @@ sub lookup {
 sub authenticate {
     my ($self, $end_user_name, $end_user_password) = @_;
 
-    my $api_url = URI->new($self->base_url . $self->version . "/authenticate");
+    my $api_url = $self->_api_url("authenticate");
 
     my $response = $self->ua->post($api_url, [
         format     => 'json',
@@ -187,10 +169,7 @@ sub info {
         croak("either short_urls or hashes is required parameter.\n");
     }
 
-    my $api_url = URI->new($self->base_url . $self->version . "/info");
-       $api_url->query_param(login    => $self->user_name);
-       $api_url->query_param(apiKey   => $self->user_api_key);
-       $api_url->query_param(format   => 'json');
+    my $api_url = $self->_api_url("info");
        $api_url->query_param(shortUrl => reverse(@$short_urls))   if $short_urls;
        $api_url->query_param(hash     => reverse(@$hashes))       if $hashes;
 
@@ -199,6 +178,10 @@ sub info {
 
 sub _do_request {
     my ($self, $url, $result_class) = @_;
+
+    $url->query_param(login    => $self->user_name);
+    $url->query_param(apiKey   => $self->user_api_key);
+    $url->query_param(format   => 'json');
 
     my $response = $self->ua->get($url);
 
@@ -214,6 +197,11 @@ sub _do_request {
 
     my $bitly_response = from_json($response->content);
     return $result_class->new($bitly_response);
+}
+
+sub _api_url {
+    my ($self, $api_name) = @_;
+    return URI->new($self->base_url . $self->version . "/". $api_name);
 }
 
 1;
@@ -415,11 +403,11 @@ You can use this in much the same way as expand method.  Each result object has 
 
 =head2 referrers(%param)
 
-Get a list of referring sites for a specified url or hash.
+Get a list of referring sites for a specified short url or hash.
 
 =head3 parameters
 
-Specify either short_url or hashes.
+Specify either short_url or hash.
 
 =over 4
 
@@ -449,7 +437,7 @@ You can get data by following method of result object.
 
 =item * referrers
 
-arrayref of referrer information object.  you can use accessor method such as clicks, referrer, referrer_app, url.
+arrayref of referrer information object.  you can use accessor method such as clicks, referrer, referrer_app nand url.
 
 =back
 
