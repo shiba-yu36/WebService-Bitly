@@ -2,12 +2,17 @@ package Test::Function;
 use strict;
 use warnings;
 
+use FindBin;
+use lib "$FindBin::Bin/lib";
+
 use Test::More;
 use Test::Exception;
-use WebService::Bitly;
 use IO::Prompt;
 use YAML::Syck;
 use Path::Class qw(file);
+
+use WebService::Bitly;
+use Test::WebService::Bitly;
 
 use base qw(Test::Class Class::Accessor::Fast);
 
