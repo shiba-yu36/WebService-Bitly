@@ -1,0 +1,15 @@
+referrers:
+  data:
+    created_by: bitly
+    global_hash: djZ9g4
+    referrers:
+      - clicks: 5
+        referrer: direct
+        referrer_app: TweetDeck
+        url: http://tweetdeck.com
+      - clicks: 10
+        referrer: http://twitter.com
+    short_url: http://bit.ly/djZ9g4
+    user_hash: djZ9g4
+  status_code: 200
+  status_txt: OK

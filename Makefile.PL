@@ -14,8 +14,11 @@ requires 'Class::Accessor::Fast';
 requires 'JSON';
 
 test_requires 'Test::More';
+test_requires 'Test::Exception';
 test_requires 'Test::Class';
 test_requires 'IO::Prompt';
+test_requires 'YAML::Syck';
+test_requires 'Path::Class';
 
 auto_install;
 WriteAll;

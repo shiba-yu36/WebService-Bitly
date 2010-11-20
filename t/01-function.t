@@ -3,8 +3,11 @@ use strict;
 use warnings;
 
 use Test::More;
+use Test::Exception;
 use WebService::Bitly;
 use IO::Prompt;
+use YAML::Syck;
+use Path::Class qw(file);
 
 use base qw(Test::Class Class::Accessor::Fast);
 
@@ -23,6 +26,9 @@ sub api_input : Test(startup) {
         end_user_name     => $user_name,
         end_user_api_key  => $user_api_key,
     };
+
+    my $data_file = file(__FILE__)->dir->subdir('data')->file('response.yml');
+    $self->{data} = LoadFile($data_file->stringify);
 }
 
 sub test_010_instance : Test(8) {
