@@ -5,4 +5,8 @@ Revision history for WebService-Bitly
 0.02    Tue Nov 16 21:50:20 2010
         Little fix clicks api test. Sam Kaufman send me the patch. Thanks.
         /v3/validate api doesn't work well, so skip validate api test temporarily.
-        
+0.03    Mon Nov 22 22:03:20 2010
+        add referrers method.
+        fix dependency.
+        change where returns array into returning array or arrayref depending on the context.
+                

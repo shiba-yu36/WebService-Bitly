@@ -20,6 +20,7 @@ lib/WebService/Bitly/Result/Expand.pm
 lib/WebService/Bitly/Result/HTTPError.pm
 lib/WebService/Bitly/Result/Info.pm
 lib/WebService/Bitly/Result/Lookup.pm
+lib/WebService/Bitly/Result/Referrers.pm
 lib/WebService/Bitly/Result/Shorten.pm
 lib/WebService/Bitly/Result/Validate.pm
 lib/WebService/Bitly/Util.pm
@@ -29,4 +30,6 @@ META.yml
 README
 t/00-load.t
 t/01-function.t
+t/data/response.yml
+t/lib/Test/WebService/Bitly.pm
 t/manifest.t
