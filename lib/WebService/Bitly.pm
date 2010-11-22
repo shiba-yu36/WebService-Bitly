@@ -113,6 +113,21 @@ sub clicks {
     $self->_do_request($api_url, 'Clicks');
 }
 
+sub referrers {
+    my ($self, %args) = @_;
+    my $short_url = $args{short_url} || [];
+    my $hash      = $args{hash} || [];
+    if ($short_url xor $hash) {
+        croak("please input either short_url or hash.");
+    }
+
+    my $api_url = $self->_api_url("referrers");
+       $api_url->query_param(shortUrl => $short_url) if $short_url;
+       $api_url->query_param(hash     => $hash)      if $hash;
+
+    $self->_do_request($api_url, 'Referrers');
+}
+
 sub bitly_pro_domain {
     my ($self, $domain) = @_;
     if (!$domain) {
@@ -407,7 +422,7 @@ Get a list of referring sites for a specified short url or hash.
 
 =head3 parameters
 
-Specify either short_url or hash.
+Specify either short_url or hash, but not both.
 
 =over 4
 
@@ -437,13 +452,13 @@ You can get data by following method of result object.
 
 =item * referrers
 
-arrayref of referrer information object.  you can use accessor method such as clicks, referrer, referrer_app nand url.
+array of referrer information object.  you can use accessor method such as clicks, referrer, referrer_app nand url.
 
 =back
 
    my $result = $bitly->referrers(short_url => 'http://bit.ly/abcdef');
    print $result->short_url;
-   for my $referrer (@{$result->refferers}) {
+   for my $referrer ($result->refferers) {
        printf '%s : %s', $referrer->referrer, $referrer->clicks;
    }
 

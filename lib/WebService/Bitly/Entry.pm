@@ -22,6 +22,10 @@ __PACKAGE__->mk_accessors(qw(
 
     title
     created_by
+
+    referrer
+    referrer_app
+    clicks
 ));
 
 sub new {
