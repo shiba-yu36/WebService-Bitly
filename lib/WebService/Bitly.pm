@@ -118,7 +118,7 @@ sub referrers {
     my $short_url = $args{short_url} || [];
     my $hash      = $args{hash} || [];
     if ($short_url xor $hash) {
-        croak("please input either short_url or hash.");
+        croak("please input either short_url or hash, not both.");
     }
 
     my $api_url = $self->_api_url("referrers");
@@ -126,6 +126,21 @@ sub referrers {
        $api_url->query_param(hash     => $hash)      if $hash;
 
     $self->_do_request($api_url, 'Referrers');
+}
+
+sub countries {
+    my ($self, %args) = @_;
+    my $short_url = $args{short_url} || [];
+    my $hash      = $args{hash} || [];
+    if ($short_url xor $hash) {
+        croak("please input either short_url or hash, not both.");
+    }
+
+    my $api_url = $self->_api_url("countries");
+       $api_url->query_param(shortUrl => $short_url) if $short_url;
+       $api_url->query_param(hash     => $hash)      if $hash;
+
+    $self->_do_request($api_url, 'Countries');
 }
 
 sub bitly_pro_domain {
@@ -452,7 +467,7 @@ You can get data by following method of result object.
 
 =item * referrers
 
-returns array or arrayref of referrer information object.  array context returns array,  and scalar context returns arrayref.  you can use accessor method such as clicks, referrer, referrer_app nand url.
+returns array or arrayref of referrer information object.  array context returns array,  and scalar context returns arrayref.  you can use accessor method such as clicks, referrer, referrer_app and url.
 
 =back
 
@@ -462,6 +477,25 @@ returns array or arrayref of referrer information object.  array context returns
        printf '%s : %s', $referrer->referrer, $referrer->clicks;
    }
 
+=head2 countries
+
+Get a list of countries for a specified short url or hash.  You can use this in much the same way as referrers method.  you are be able to data by following method of result object.
+
+=over 4
+
+=item * is_error
+
+=item * created_by
+
+=item * global_hash
+
+=item * short_url
+
+=item * user_hash
+
+=item * countries
+
+returns array or arrayref of arrayref of countries information object depending on context.  you can use accessor method such as clicks and country.
 
 =head2 bitly_pro_domain($domain)
 

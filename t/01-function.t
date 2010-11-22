@@ -346,6 +346,45 @@ sub test_021_referrers : Test(18) {
     is $referrers->[1]->referrer, $data->{data}->{referrers}->[1]->{referrer}, 'correct referrer';
 }
 
+sub test_022_countries : Test(14) {
+    my $self = shift;
+    my $args = $self->args;
+
+    if (!$args->{user_name} && !$args->{user_api_key}) {
+        return 'user name and api key are both required';
+    }
+
+    ok my $bitly = WebService::Bitly->new(
+        %$args,
+    );
+
+    dies_ok(sub {$bitly->countries}, 'Either short_url or hash is required');
+    dies_ok(sub {
+        $bitly->countries(
+            short_url => 'http://bit.ly/djZ9g4',
+            hash      => 'djZ9g4',
+        );
+    }, 'Either short_url or hash is required');
+
+    my $result_country = $bitly->countries(hash => 'djZ9g4');
+    ok $result_country->global_hash, 'can access global hash';
+    ok $result_country->user_hash, 'can access user hash';
+    ok $result_country->countries, 'can access countries';
+
+    my $data = $self->{data}->{countries};
+    my $result_countries = initialize_result_class('Countries', $data);
+    is $result_countries->created_by, $data->{data}->{created_by}, 'correct created_by';
+    is $result_countries->global_hash, $data->{data}->{global_hash}, 'correct global_hash';
+    is $result_countries->short_url, $data->{data}->{short_url}, 'correct short_url';
+    is $result_countries->user_hash, $data->{data}->{user_hash}, 'correct user_hash';
+
+    my $countries = $result_countries->countries;
+    is $countries->[0]->clicks, $data->{data}->{countries}->[0]->{clicks}, 'correct clicks';
+    is $countries->[0]->country, $data->{data}->{countries}->[0]->{country}, 'correct country';
+    is $countries->[1]->clicks, $data->{data}->{countries}->[1]->{clicks}, 'correct clicks';
+    is $countries->[1]->country, $data->{data}->{countries}->[1]->{country}, 'correct country';
+}
+
 __PACKAGE__->runtests;
 
 1;

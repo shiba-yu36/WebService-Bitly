@@ -26,6 +26,8 @@ __PACKAGE__->mk_accessors(qw(
     referrer
     referrer_app
     clicks
+
+    country
 ));
 
 sub new {
