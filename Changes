@@ -6,7 +6,8 @@ Revision history for WebService-Bitly
         Little fix clicks api test. Sam Kaufman send me the patch. Thanks.
         /v3/validate api doesn't work well, so skip validate api test temporarily.
 0.03    Mon Nov 22 22:03:20 2010
+        /v3/validate api work again, so make validate api test work.
         add referrers method.
         fix dependency.
         change where returns array into returning array or arrayref depending on the context.
-                
+
