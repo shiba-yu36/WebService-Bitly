@@ -6,12 +6,14 @@ name     'WebService-Bitly';
 author   'Yuki Shibazaki <shibayu36@gmail.com>';
 all_from 'lib/WebService/Bitly.pm';
 
+requires 'Carp';
 requires 'URI';
 requires 'URI::QueryParam';
 requires 'LWP::UserAgent';
 requires 'JSON';
 requires 'Class::Accessor::Fast';
 requires 'JSON';
+requires 'UNIVERSAL::require';
 
 test_requires 'Test::More';
 test_requires 'Test::Exception';
