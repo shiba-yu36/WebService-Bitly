@@ -358,7 +358,7 @@ bit.ly hash arrayref
         }
     }
 
-You can get expand result list by $expand->results method.  Each result object has following method.
+You can get expand results by $expand->results method. This method returns array in array context, or returns array refference in scalar context. Each result object has following method.
 
 =over 4
 
@@ -452,7 +452,7 @@ You can get data by following method of result object.
 
 =item * referrers
 
-array of referrer information object.  you can use accessor method such as clicks, referrer, referrer_app nand url.
+returns array or arrayref of referrer information object.  array context returns array,  and scalar context returns arrayref.  you can use accessor method such as clicks, referrer, referrer_app nand url.
 
 =back
 

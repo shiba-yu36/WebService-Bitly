@@ -337,13 +337,13 @@ sub test_021_referrers : Test(18) {
     is $result_referrer->short_url, $data->{data}->{short_url}, 'correct short_url';
     is $result_referrer->user_hash, $data->{data}->{user_hash}, 'correct user_hash';
 
-    my @referrers = $result_referrer->referrers;
-    is $referrers[0]->clicks, $data->{data}->{referrers}->[0]->{clicks}, 'correct clicks';
-    is $referrers[0]->referrer, $data->{data}->{referrers}->[0]->{referrer}, 'correct referrer';
-    is $referrers[0]->referrer_app, $data->{data}->{referrers}->[0]->{referrer_app}, 'correct referrer_app';
-    is $referrers[0]->url, $data->{data}->{referrers}->[0]->{url}, 'correct url';
-    is $referrers[1]->clicks, $data->{data}->{referrers}->[1]->{clicks}, 'correct clicks';
-    is $referrers[1]->referrer, $data->{data}->{referrers}->[1]->{referrer}, 'correct referrer';
+    my $referrers = $result_referrer->referrers;
+    is $referrers->[0]->clicks, $data->{data}->{referrers}->[0]->{clicks}, 'correct clicks';
+    is $referrers->[0]->referrer, $data->{data}->{referrers}->[0]->{referrer}, 'correct referrer';
+    is $referrers->[0]->referrer_app, $data->{data}->{referrers}->[0]->{referrer_app}, 'correct referrer_app';
+    is $referrers->[0]->url, $data->{data}->{referrers}->[0]->{url}, 'correct url';
+    is $referrers->[1]->clicks, $data->{data}->{referrers}->[1]->{clicks}, 'correct clicks';
+    is $referrers->[1]->referrer, $data->{data}->{referrers}->[1]->{referrer}, 'correct referrer';
 }
 
 __PACKAGE__->runtests;

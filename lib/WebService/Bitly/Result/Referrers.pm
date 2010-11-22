@@ -19,7 +19,8 @@ sub new {
 }
 
 sub referrers {
-    return @{shift->{referrers}};
+    my $referrers = shift->{referrers};
+    return wantarray ? @$referrers : $referrers;
 }
 
 sub created_by {

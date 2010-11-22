@@ -19,7 +19,8 @@ sub new {
 }
 
 sub results {
-    return @{shift->{results}};
+    my $results = shift->{results};
+    return wantarray ? @$results : $results;
 }
 
 1;
