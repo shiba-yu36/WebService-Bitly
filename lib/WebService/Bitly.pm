@@ -573,6 +573,15 @@ arrayref of clicks information object.  each object has accessor for clicks and 
 
 =back
 
+   my $result_clicks = $bitly->clicks_by_day(short_url => ['http://bit.ly/abcdef'], hash => ['abcdef']);
+   for my $result (@{$result_clicks->results}) {
+       print $result->user_hash;
+       for my $clicks (@{$result->clicks}) {
+           print $clicks->clicks;
+           print $clicks->day_start;
+       }
+   }
+
 =head2 bitly_pro_domain($domain)
 
 Check whether a given short domain is assigned for bitly.Pro.
