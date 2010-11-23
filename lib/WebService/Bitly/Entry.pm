@@ -28,6 +28,8 @@ __PACKAGE__->mk_accessors(qw(
     clicks
 
     country
+
+    day_start
 ));
 
 sub new {

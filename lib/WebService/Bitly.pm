@@ -158,6 +158,21 @@ sub clicks_by_minute {
     $self->_do_request($api_url, 'ClicksByMinute');
 }
 
+sub clicks_by_day {
+    my ($self, %args) = @_;
+    my $short_urls = $args{short_urls} || [];
+    my $hashes     = $args{hashes} || [];
+    if (!$short_urls && !$hashes) {
+        croak("either short_urls or hashes is required parameter.\n");
+    }
+
+    my $api_url = $self->_api_url("clicks_by_day");
+       $api_url->query_param(shortUrl => reverse(@$short_urls))   if $short_urls;
+       $api_url->query_param(hash     => reverse(@$hashes))       if $hashes;
+
+    $self->_do_request($api_url, 'ClicksByDay');
+}
+
 sub bitly_pro_domain {
     my ($self, $domain) = @_;
     if (!$domain) {
@@ -512,6 +527,8 @@ Get a list of countries for a specified short url or hash.  You can use this in 
 
 returns array or arrayref of arrayref of countries information object depending on context.  you can use accessor method such as clicks and country.
 
+=back
+
 =head2 clicks_by_minute
 
 Get time series clicks per minute by short urls and hashes.  You can use this in much the same way as expand method.  Each result object has following method.
@@ -531,6 +548,30 @@ Get time series clicks per minute by short urls and hashes.  You can use this in
 =item * clicks
 
 arrayref of the number of clicks per minutes.
+
+=back
+
+=head2 clicks_by_day
+
+Get time series clicks per day for the last 30 days by short urls and hashes.  You can use this in much the same way as clicks_by_minute method.  Each result object has following method.
+
+=over 4
+
+=item * is_error
+
+=item * short_url
+
+=item * hash
+
+=item * user_hash
+
+=item * global_hash
+
+=item * clicks
+
+arrayref of clicks information object.  each object has accessor for clicks and day_start.
+
+=back
 
 =head2 bitly_pro_domain($domain)
 

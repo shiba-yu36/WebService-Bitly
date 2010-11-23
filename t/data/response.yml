@@ -39,6 +39,19 @@ clicks_by_minute:
         user_hash: userdjZ
   status_code: 200
   status_txt: OK
-
+clicks_by_day:
+  data:
+    clicks_by_day:
+      - clicks:
+        - clicks: 5
+          day_start: 1290402000
+        - clicks: 10
+          day_start: 1290315600
+        global_hash: djZ9g4
+        hash: djZ9g4
+        short_url: http://bit.ly/djZ9g4
+        user_hash: userdjZ
+  status_code: 200
+  status_txt: OK
 
 

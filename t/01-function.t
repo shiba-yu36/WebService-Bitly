@@ -448,6 +448,72 @@ sub test_023_clicks_by_minute : Test(21) {
     is $results->[0]->clicks->[2], $clicks_by_minutes_data->[0]->{clicks}->[2], 'is correct clicks';
 }
 
+sub test_024_clicks_by_day : Test(22) {
+    my $self = shift;
+    my $args = $self->args;
+
+    if (!$args->{user_name} && !$args->{user_api_key}) {
+        return 'user name and api key are both required';
+    }
+
+    ok my $bitly = WebService::Bitly->new(
+        %$args,
+    );
+
+    dies_ok(sub {$bitly->clicks_by_day}, 'Either short_url, hash or multi is required');
+
+    ok my $result_shorten = $bitly->shorten('http://www.google.co.jp/');
+
+    ok my $result_clicks = $bitly->clicks_by_day(
+        short_urls   => [$result_shorten->short_url, 'http://bit.ly/bad-url.'],
+        hashes       => [$result_shorten->hash, 'bad-url.'],
+    );
+
+    isa_ok $result_clicks, 'WebService::Bitly::Result::ClicksByDay', 'is correct object';
+    ok !$result_clicks->is_error;
+
+    my @clicks_list = $result_clicks->results;
+    #You can't map the responses by order, response order is not guaranteed.
+    #to test the responses you have to match what was sent to what was echoed back by the server.
+    my ($result_valid_short_url) = grep
+        { defined $_->short_url && $_->short_url eq $result_shorten->short_url } @clicks_list;
+    my ($result_invalid_short_url) = grep
+        { defined $_->short_url && $_->short_url eq 'http://bit.ly/bad-url.' } @clicks_list;
+    my ($result_valid_hash) = grep
+        { defined $_->hash && $_->hash eq $result_shorten->hash } @clicks_list;
+    my ($result_invalid_hash) = grep
+        { defined $_->hash && $_->hash eq 'bad-url.' } @clicks_list;
+
+    ok !$result_valid_short_url->is_error, 'error should not occur';
+    #Busted
+    is $result_valid_short_url->short_url, $result_shorten->short_url, 'should get correct short_url';
+    ok $result_valid_short_url->clicks, 'should get clicks';
+
+    ok $result_invalid_short_url->is_error, 'error should occur';
+
+    ok !$result_valid_hash->is_error, 'error should not occur';
+    is $result_valid_hash->hash, $result_shorten->hash, 'should get correct hash';
+    ok $result_valid_hash->clicks, 'should get global clicks';
+
+    ok $result_invalid_hash->is_error, 'error should occur';
+
+    # accessor test
+    my $data = $self->{data}->{clicks_by_day};
+    $result_clicks = initialize_result_class('ClicksByDay', $data);
+    my $results = $result_clicks->results;
+    my $clicks_by_day_data = $data->{data}->{clicks_by_day};
+    is $results->[0]->global_hash, $clicks_by_day_data->[0]->{global_hash}, 'is correct global hash';
+    is $results->[0]->hash, $clicks_by_day_data->[0]->{hash}, 'is correct hash';
+    is $results->[0]->short_url, $clicks_by_day_data->[0]->{short_url}, 'is correct short_url';
+    is $results->[0]->user_hash, $clicks_by_day_data->[0]->{user_hash}, 'is correct user_hash';
+
+    my $clicks = $results->[0]->clicks;
+    is $clicks->[0]->clicks, $clicks_by_day_data->[0]->{clicks}->[0]->{clicks}, 'is correct clicks';
+    is $clicks->[0]->day_start, $clicks_by_day_data->[0]->{clicks}->[0]->{day_start}, 'is correct day start';
+    is $clicks->[1]->clicks, $clicks_by_day_data->[0]->{clicks}->[1]->{clicks}, 'is correct clicks';
+    is $clicks->[1]->day_start, $clicks_by_day_data->[0]->{clicks}->[1]->{day_start}, 'is correct day start';
+}
+
 __PACKAGE__->runtests;
 
 1;
