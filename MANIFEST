@@ -16,6 +16,9 @@ lib/WebService/Bitly/Result.pm
 lib/WebService/Bitly/Result/Authenticate.pm
 lib/WebService/Bitly/Result/BitlyProDomain.pm
 lib/WebService/Bitly/Result/Clicks.pm
+lib/WebService/Bitly/Result/ClicksByDay.pm
+lib/WebService/Bitly/Result/ClicksByMinute.pm
+lib/WebService/Bitly/Result/Countries.pm
 lib/WebService/Bitly/Result/Expand.pm
 lib/WebService/Bitly/Result/HTTPError.pm
 lib/WebService/Bitly/Result/Info.pm

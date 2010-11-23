@@ -10,4 +10,4 @@ Revision history for WebService-Bitly
         add referrers method.
         fix dependency.
         change where returns array into returning array or arrayref depending on the context.
-
+0.04    add new api method such as /v3/countries, /v3/clicks_by_minute and /v3/clicks_by_day
