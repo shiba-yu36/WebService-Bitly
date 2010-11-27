@@ -36,7 +36,7 @@ sub new {
     }
 
     $args{version} ||= 'v3';
-    $args{ua} = LWP::UserAgent->new(
+    $args{ua} ||= LWP::UserAgent->new(
         env_proxy => 1,
         timeout   => 30,
     );

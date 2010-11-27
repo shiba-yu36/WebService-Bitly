@@ -5,6 +5,8 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/lib";
 
+use Test::WebService::Bitly;
+use Test::WebService::Bitly::Mock::UserAgent;
 use Test::More;
 use Test::Exception;
 use IO::Prompt;
@@ -12,7 +14,7 @@ use YAML::Syck;
 use Path::Class qw(file);
 
 use WebService::Bitly;
-use Test::WebService::Bitly;
+
 
 use base qw(Test::Class Class::Accessor::Fast);
 
@@ -30,6 +32,7 @@ sub api_input : Test(startup) {
         user_api_key      => $user_api_key,
         end_user_name     => $user_name,
         end_user_api_key  => $user_api_key,
+        ua                => Test::WebService::Bitly::Mock::UserAgent->new,
     };
 
     my $data_file = file(__FILE__)->dir->subdir('data')->file('response.yml');
@@ -59,7 +62,7 @@ sub test_010_instance : Test(8) {
     is $bitly->version, 'v3', 'can get correct version';
 }
 
-sub test_011_shorten : Test(6) {
+sub test_011_shorten : Test(9) {
     my $self = shift;
     my $args = $self->args;
 
@@ -68,12 +71,15 @@ sub test_011_shorten : Test(6) {
     }
 
     ok my $bitly = WebService::Bitly->new(%$args);
-    ok my $result_shorten = $bitly->shorten('http://code.google.com/p/bitly-api/wiki/ApiDocumentation');
+    ok my $result_shorten = $bitly->shorten('http://betaworks.com/');
 
     isa_ok $result_shorten, 'WebService::Bitly::Result::Shorten', 'is correct object';
     ok !$result_shorten->is_error, 'not http error';
-    ok $result_shorten->short_url =~ m{^http://bit[.]ly/\w{6}}, 'can get correct short_url';
-    is $result_shorten->long_url, 'http://code.google.com/p/bitly-api/wiki/ApiDocumentation', 'can get correct long_url';
+    is $result_shorten->short_url, 'http://bit.ly/cmeH01', 'can get correct short_url';
+    is $result_shorten->hash, 'cmeH01', 'can get correct hash';
+    is $result_shorten->global_hash, '1YKMfY', 'can get correct gobal hash';
+    is $result_shorten->long_url, 'http://betaworks.com/', 'can get correct long url';
+    is $result_shorten->is_new_hash, 0, 'can get correct new hash';
 }
 
 sub test_012_set_end_user_info : Test(4) {
