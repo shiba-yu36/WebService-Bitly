@@ -99,7 +99,7 @@ sub test_012_set_end_user_info : Test(4) {
     is $bitly->end_user_api_key, $args->{end_user_api_key};
 }
 
-sub test_013_validate : Test(9) {
+sub test_013_validate : Test(4) {
     my $self = shift;
     my $args = $self->args;
 
@@ -111,18 +111,6 @@ sub test_013_validate : Test(9) {
     ok my $validate_result = $bitly->validate;
     isa_ok $validate_result, 'WebService::Bitly::Result::Validate', 'is correct object';
     ok $validate_result->is_valid;
-
-    ok $bitly->set_end_user_info('test', 'test'), 'both parameter are invalid';
-    ok !$bitly->validate->is_valid;
-
-    $bitly->set_end_user_info('', $args->{end_user_name});
-    ok $bitly->validate->is_error;
-
-    $bitly->set_end_user_info($args->{end_user_api_key}, '');
-    ok $bitly->validate->is_error;
-
-    $bitly->set_end_user_info('', '');
-    ok $bitly->validate->is_error, 'both parameter are empty';
 }
 
 sub test_014_expand : Test(10) {
