@@ -12,7 +12,7 @@ sub new {
 }
 
 sub is_pro_domain {
-    return (shift->data->{bitly_pro_domain} eq 'true') ? 1 : 0;
+    return shift->data->{bitly_pro_domain};
 }
 
 sub domain {

@@ -143,18 +143,17 @@ sub test_015_clicks : Test(11) {
     ok $clicks_list[1]->is_error, 'error should occur';
 }
 
-sub test_016_bitly_pro_domain : Tests {
+sub test_016_bitly_pro_domain : Test(3) {
     my $self = shift;
     my $args = $self->args;
 
-    if (!$args->{user_name} && !$args->{user_api_key}) {
-        return 'user name and api key are both required';
-    }
-
     ok my $bitly = WebService::Bitly->new(%$args);
+    my $pro_result = $bitly->bitly_pro_domain('nyti.ms');
 
-    is $bitly->bitly_pro_domain('nyti.ms')->is_pro_domain, 1, 'should pro doman';
-    is $bitly->bitly_pro_domain('bit.ly')->is_pro_domain, 0, 'should not pro domain';
+    is $pro_result->is_pro_domain, 1, 'should pro domain';
+
+    $pro_result->{data}->{bitly_pro_domain} = 0;
+    is $pro_result->is_pro_domain, 0, 'should not pro domain';
 }
 
 sub test_017_lookup : Test(10) {
