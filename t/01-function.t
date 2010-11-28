@@ -9,8 +9,6 @@ use Test::WebService::Bitly;
 use Test::WebService::Bitly::Mock::UserAgent;
 use Test::More;
 use Test::Exception;
-use IO::Prompt;
-use YAML::Syck;
 use Path::Class qw(file);
 use JSON;
 
@@ -34,9 +32,6 @@ sub api_input : Test(startup) {
         end_user_api_key  => $user_api_key,
         ua                => Test::WebService::Bitly::Mock::UserAgent->new,
     };
-
-    my $data_file = file(__FILE__)->dir->subdir('data')->file('response.yml');
-    $self->{data} = LoadFile($data_file->stringify);
 }
 
 sub test_010_instance : Test(8) {
