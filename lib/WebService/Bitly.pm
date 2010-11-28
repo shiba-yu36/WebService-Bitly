@@ -62,8 +62,8 @@ sub shorten {
 
 sub expand {
     my ($self, %args) = @_;
-    my $short_urls = $args{short_urls} || [];
-    my $hashes     = $args{hashes} || [];
+    my $short_urls = $args{short_urls} || undef;
+    my $hashes     = $args{hashes} || undef;
     if (!$short_urls && !$hashes) {
         croak("either short_urls or hashes is required parameter.\n");
     }
@@ -100,8 +100,8 @@ sub set_end_user_info {
 
 sub clicks {
     my ($self, %args) = @_;
-    my $short_urls   = $args{short_urls} || [];
-    my $hashes       = $args{hashes} || [];
+    my $short_urls   = $args{short_urls} || undef;
+    my $hashes       = $args{hashes} || undef;
     if (!$short_urls && !$hashes) {
         croak("either short_urls or hashes is required parameter.\n");
     }
@@ -147,8 +147,8 @@ sub countries {
 
 sub clicks_by_minute {
     my ($self, %args) = @_;
-    my $short_urls = $args{short_urls} || [];
-    my $hashes     = $args{hashes} || [];
+    my $short_urls = $args{short_urls} || undef;
+    my $hashes     = $args{hashes} || undef;
     if (!$short_urls && !$hashes) {
         croak("either short_urls or hashes is required parameter.\n");
     }
@@ -162,8 +162,8 @@ sub clicks_by_minute {
 
 sub clicks_by_day {
     my ($self, %args) = @_;
-    my $short_urls = $args{short_urls} || [];
-    my $hashes     = $args{hashes} || [];
+    my $short_urls = $args{short_urls} || undef;
+    my $hashes     = $args{hashes} || undef;
     if (!$short_urls && !$hashes) {
         croak("either short_urls or hashes is required parameter.\n");
     }
@@ -220,13 +220,13 @@ sub authenticate {
     }
 
     my $bitly_response = from_json($response->content);
-    return WebService::Bitly::Result::Autenticate->new($bitly_response);
+    return WebService::Bitly::Result::Authenticate->new($bitly_response);
 }
 
 sub info {
     my ($self, %args) = @_;
-    my $short_urls   = $args{short_urls} || [];
-    my $hashes       = $args{hashes} || [];
+    my $short_urls   = $args{short_urls} || undef;
+    my $hashes       = $args{hashes} || undef;
     if (!$short_urls && !$hashes) {
         croak("either short_urls or hashes is required parameter.\n");
     }

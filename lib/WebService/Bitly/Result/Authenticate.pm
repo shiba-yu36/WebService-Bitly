@@ -1,4 +1,4 @@
-package WebService::Bitly::Result::Autenticate;
+package WebService::Bitly::Result::Authenticate;
 
 use warnings;
 use strict;
