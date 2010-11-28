@@ -5,7 +5,7 @@ use strict;
 use Carp;
 use UNIVERSAL::require;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 use URI;
 use URI::QueryParam;
@@ -276,7 +276,7 @@ WebService::Bitly - A Perl interface to the bit.ly API
 
 =head1 VERSION
 
-This document describes version 0.04 of WebService::Bitly.
+This document describes version 0.05 of WebService::Bitly.
 
 =head1 SYNOPSIS
 
