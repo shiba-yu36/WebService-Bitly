@@ -27,6 +27,7 @@ test_requires 'URI';
 test_requires 'HTTP::Response';
 test_requires 'File::Basename';
 test_requires 'Test::MockObject::Extends';
+test_requires 'JSON';
 
 auto_install;
 WriteAll;

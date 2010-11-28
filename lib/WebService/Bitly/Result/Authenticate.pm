@@ -22,7 +22,7 @@ sub api_key {
 sub is_success {
     my $self = shift;
     return 0 if $self->is_error;
-    return ($self->data->{authenticate}->{successful} eq 'true') ? 1 : 0;
+    return $self->data->{authenticate}->{successful} ? 1 : 0;
 }
 
 1;

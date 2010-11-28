@@ -12,6 +12,7 @@ use Test::Exception;
 use IO::Prompt;
 use YAML::Syck;
 use Path::Class qw(file);
+use JSON;
 
 use WebService::Bitly;
 
@@ -178,21 +179,19 @@ sub test_017_lookup : Test(8) {
     ok $lookup[1]->is_error, 'error should occur';
 }
 
-sub test_018_authenticate : Test(9) {
+sub test_018_authenticate : Test(7) {
     my $self = shift;
     my $args = $self->args;
-    return("this test cannot succeeded, unless user allow authenticate access.");
 
     ok my $bitly = WebService::Bitly->new(%$args);
     ok my $authenticate = $bitly->authenticate('bitlyapidemo', 'good-password');
 
     ok !$authenticate->is_error, 'error should not occur';
     ok $authenticate->is_success, 'authenticate should be success';
-    is $authenticate->user_name, $args->{end_user_name}, 'user name should be correct';
-    is $authenticate->api_key, $args->{end_user_api_key}, 'user api key should be correct';
+    is $authenticate->user_name, 'bitlyapidemo', 'user name should be correct';
+    is $authenticate->api_key, 'R_0da49e0a9118ff35f52f629d2d71bf07', 'user api key should be correct';
 
-    ok $authenticate = $bitly->authenticate('bitlyapidemo', 'bad-password');
-    ok !$authenticate->is_error, 'error should not occur';
+    $authenticate->{data}->{authenticate}->{successful} = JSON::false;
     ok !$authenticate->is_success, 'authenticate should not be success';
 }
 

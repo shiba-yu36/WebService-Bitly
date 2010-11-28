@@ -13,7 +13,8 @@ sub new {
     my $ua = LWP::UserAgent->new;
     $ua = Test::MockObject::Extends->new($ua);
 
-    $ua->mock(get => sub {__PACKAGE__->_mock_response($_[1])});
+    $ua->mock(get  => sub {__PACKAGE__->_mock_response($_[1])});
+    $ua->mock(post => sub {__PACKAGE__->_mock_response($_[1])});
 
     return $ua;
 }
