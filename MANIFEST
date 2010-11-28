@@ -33,7 +33,6 @@ META.yml
 README
 t/00-load.t
 t/01-function.t
-t/data/response.yml
 t/data/v3/authenticate.json
 t/data/v3/bitly_pro_domain.json
 t/data/v3/clicks.json
