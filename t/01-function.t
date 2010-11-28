@@ -156,21 +156,15 @@ sub test_016_bitly_pro_domain : Test(3) {
     is $pro_result->is_pro_domain, 0, 'should not pro domain';
 }
 
-sub test_017_lookup : Test(10) {
+sub test_017_lookup : Test(8) {
     my $self = shift;
     my $args = $self->args;
 
-    if (!$args->{user_name} && !$args->{user_api_key}) {
-        return 'user name and api key are both required';
-    }
-
     ok my $bitly = WebService::Bitly->new(%$args);
-    ok my $result_shorten1 = $bitly->shorten('http://code.google.com/p/bitly-api/wiki/ApiDocumentation');
-    ok my $result_shorten2 = $bitly->shorten('http://www.google.co.jp/');
 
     ok my $lookup = $bitly->lookup([
-        'http://code.google.com/p/bitly-api/wiki/ApiDocumentation',
-        'http://www.google.co.jp/',
+        'http://betaworks.com/',
+        'asdf://www.google.com/not/a/real/link',
     ]);
 
     isa_ok $lookup, 'WebService::Bitly::Result::Lookup', 'is correct object';
@@ -178,10 +172,10 @@ sub test_017_lookup : Test(10) {
 
     my @lookup = $lookup->results;
 
-    is $lookup[0]->global_hash, $result_shorten1->global_hash, 'should get correct global hash';
-    is $lookup[0]->short_url, 'http://bit.ly/'.$result_shorten1->global_hash, 'should get correct short url';
-    is $lookup[1]->global_hash, $result_shorten2->global_hash, 'should get correct global hash';
-    is $lookup[1]->short_url, 'http://bit.ly/'.$result_shorten2->global_hash, 'should get correct short url';
+    is $lookup[0]->global_hash, 'beta', 'correct global_hash';
+    is $lookup[0]->short_url, 'http://bit.ly/beta', 'correct short_url';
+    is $lookup[0]->url, 'http://betaworks.com/', 'correct url';
+    ok $lookup[1]->is_error, 'error should occur';
 }
 
 sub test_018_authenticate : Test(9) {
