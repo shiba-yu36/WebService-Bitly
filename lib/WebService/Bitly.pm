@@ -115,9 +115,10 @@ sub clicks {
 
 sub referrers {
     my ($self, %args) = @_;
-    my $short_url = $args{short_url} || [];
-    my $hash      = $args{hash} || [];
-    if ($short_url xor $hash) {
+    my $short_url = $args{short_url} || '';
+    my $hash      = $args{hash} || '';
+
+    unless ($short_url xor $hash) {
         croak("please input either short_url or hash, not both.");
     }
 
@@ -130,9 +131,10 @@ sub referrers {
 
 sub countries {
     my ($self, %args) = @_;
-    my $short_url = $args{short_url} || [];
-    my $hash      = $args{hash} || [];
-    if ($short_url xor $hash) {
+    my $short_url = $args{short_url} || '';
+    my $hash      = $args{hash} || '';
+
+    unless ($short_url xor $hash) {
         croak("please input either short_url or hash, not both.");
     }
 
