@@ -31,8 +31,14 @@ sub _mock_response {
     my $datafile = file(__FILE__)->dir->subdir('../../../../../data')->subdir($dir_name)->file($base_name);
 
     my $response = HTTP::Response->new;
-    $response->code(200);
-    $response->message('OK');
+    if ($uri->host eq 'api.bit.ly') {
+        $response->code(200);
+        $response->message('OK');
+    }
+    else {
+        $response->code(500);
+        $response->message('Internal Server Error');
+    }
     $response->content(scalar $datafile->slurp);
 
     return $response;

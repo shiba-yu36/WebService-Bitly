@@ -227,14 +227,10 @@ sub test_020_http_error : Test(3) {
     my $self = shift;
     my $args = $self->args;
 
-    if (!$args->{user_name} && !$args->{user_api_key}) {
-        return 'user name and api key are both required';
-    }
-
     ok my $bitly = WebService::Bitly->new(
         %$args,
     );
-    $bitly->{base_url} = 'aaa';
+    $bitly->{base_url} = 'http://aaa/';
 
     my $shorten = $bitly->shorten('http://www.google.co.jp/');
     isa_ok $shorten, 'WebService::Bitly::Result::HTTPError', 'is correct object';
