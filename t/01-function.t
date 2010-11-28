@@ -119,47 +119,28 @@ sub test_014_expand : Test(10) {
     ok $expand_list[1]->is_error, 'error should occur';
 }
 
-sub test_015_clicks : Test(13) {
+sub test_015_clicks : Test(11) {
     my $self = shift;
     my $args = $self->args;
 
-    if (!$args->{user_name} && !$args->{user_api_key}) {
-        return 'user name and api key are both required';
-    }
-
     ok my $bitly = WebService::Bitly->new(%$args);
-    ok my $result_shorten = $bitly->shorten('http://code.google.com/p/bitly-api/wiki/ApiDocumentation');
 
     ok my $result_clicks = $bitly->clicks(
-        short_urls => [$result_shorten->short_url, 'http://foobarbaz.jp/a35.akasa'],
-        hashes       => [$result_shorten->hash, 'a35.akasa'],
+        short_urls => ['http://tcrn.ch/a4MSUH'],
+        hashes     => ['a35.'],
     );
     isa_ok $result_clicks, 'WebService::Bitly::Result::Clicks', 'is correct object';
     ok !$result_clicks->is_error;
 
     my @clicks_list = $result_clicks->results;
-    #You can't map the responses by order, response order is not guaranteed.
-    #to test the responses you have to match what was sent to what was echoed back by the server.
-    my ($result_valid_short_url) = grep
-        { defined $_->short_url && $_->short_url eq $result_shorten->short_url } @clicks_list;
-    my ($result_invalid_short_url) = grep
-        { defined $_->short_url && $_->short_url eq 'http://foobarbaz.jp/a35.akasa' } @clicks_list;
-    my ($result_valid_hash) = grep
-        { defined $_->hash && $_->hash eq $result_shorten->hash } @clicks_list;
-    my ($result_invalid_hash) = grep
-        { defined $_->hash && $_->hash eq 'a35.akasa' } @clicks_list;
-    ok !$result_valid_short_url->is_error, 'error should not occur';
-    #Busted
-    is $result_valid_short_url->short_url, $result_shorten->short_url, 'should get correct short_url';
-    ok $result_valid_short_url->global_clicks, 'should get global clicks';
+    is $clicks_list[0]->short_url, 'http://tcrn.ch/a4MSUH', 'correct short_url';
+    is $clicks_list[0]->global_hash, 'bWw49z', 'correct global_hash';
+    is $clicks_list[0]->user_clicks, '0', 'correct user_clicks';
+    is $clicks_list[0]->user_hash, 'a4MSUH', 'correct user_hash';
+    is $clicks_list[0]->global_clicks, '1105', 'correct global_clicks';
 
-    ok $result_invalid_short_url->is_error, 'error should occur';
-
-    ok !$result_valid_hash->is_error, 'error should not  occur';
-    is $result_valid_hash->hash, $result_shorten->hash, 'should get correct hash';
-    ok $result_valid_hash->global_clicks, 'should get global clicks';
-
-    ok $result_invalid_hash->is_error, 'error should occur';
+    is $clicks_list[1]->hash, 'a35.', 'correct hash';
+    ok $clicks_list[1]->is_error, 'error should occur';
 }
 
 sub test_016_bitly_pro_domain : Tests {
