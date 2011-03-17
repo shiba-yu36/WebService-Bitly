@@ -14,3 +14,5 @@ Revision history for WebService-Bitly
 0.05    Sun Nov 28 17:46:20 2010
         change test into using mock.
         fix some bugs.
+0.06    Thu Mar 17 17:05:50 2010
+        remove authenticate method, because remove authenticate api from bit.ly api.
