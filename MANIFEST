@@ -13,7 +13,6 @@ inc/Module/Install/WriteAll.pm
 lib/WebService/Bitly.pm
 lib/WebService/Bitly/Entry.pm
 lib/WebService/Bitly/Result.pm
-lib/WebService/Bitly/Result/Authenticate.pm
 lib/WebService/Bitly/Result/BitlyProDomain.pm
 lib/WebService/Bitly/Result/Clicks.pm
 lib/WebService/Bitly/Result/ClicksByDay.pm
@@ -33,7 +32,6 @@ META.yml
 README
 t/00-load.t
 t/01-function.t
-t/data/v3/authenticate.json
 t/data/v3/bitly_pro_domain.json
 t/data/v3/clicks.json
 t/data/v3/clicks_by_day.json

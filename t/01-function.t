@@ -14,7 +14,6 @@ use JSON;
 
 use WebService::Bitly;
 
-
 use base qw(Test::Class Class::Accessor::Fast);
 
 __PACKAGE__->mk_accessors(qw( args ));
@@ -191,24 +190,7 @@ sub test_017_lookup : Test(9) {
     ok $lookup[1]->is_error, 'error should occur';
 }
 
-sub test_018_authenticate : Test(8) {
-    my $self = shift;
-    my $args = $self->args;
-
-    ok my $bitly = WebService::Bitly->new(%$args);
-    ok my $authenticate = $bitly->authenticate('bitlyapidemo', 'good-password');
-    isa_ok $authenticate, 'WebService::Bitly::Result::Authenticate', 'is correct object';
-
-    ok !$authenticate->is_error, 'error should not occur';
-    ok $authenticate->is_success, 'authenticate should be success';
-    is $authenticate->user_name, 'bitlyapidemo', 'user name should be correct';
-    is $authenticate->api_key, 'R_0da49e0a9118ff35f52f629d2d71bf07', 'user api key should be correct';
-
-    $authenticate->{data}->{authenticate}->{successful} = JSON::false;
-    ok !$authenticate->is_success, 'authenticate should not be success';
-}
-
-sub test_019_info : Test(14) {
+sub test_018_info : Test(14) {
     my $self = shift;
     my $args = $self->args;
 
@@ -237,7 +219,7 @@ sub test_019_info : Test(14) {
     is $info_list[1]->user_hash, 'j3', 'should get correct short url';
 }
 
-sub test_020_http_error : Test(3) {
+sub test_019_http_error : Test(3) {
     my $self = shift;
     my $args = $self->args;
 
@@ -251,7 +233,7 @@ sub test_020_http_error : Test(3) {
     ok $shorten->is_error, 'error should occur';
 }
 
-sub test_021_referrers : Test(11) {
+sub test_020_referrers : Test(11) {
     my $self = shift;
     my $args = $self->args;
 
@@ -280,7 +262,7 @@ sub test_021_referrers : Test(11) {
     is $referrers->[1]->url, 'http://www.tweetdeck.com/', 'correct url';
 }
 
-sub test_022_countries : Test(11) {
+sub test_021_countries : Test(11) {
     my $self = shift;
     my $args = $self->args;
 
@@ -309,7 +291,7 @@ sub test_022_countries : Test(11) {
     is $countries->[1]->country, 'SE', 'correct country';
 }
 
-sub test_023_clicks_by_minute : Test(13) {
+sub test_022_clicks_by_minute : Test(13) {
     my $self = shift;
     my $args = $self->args;
 
